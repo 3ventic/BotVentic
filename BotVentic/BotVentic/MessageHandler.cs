@@ -59,6 +59,20 @@ namespace BotVentic
                             }
                         }
                     }
+                    
+                    if (!found)
+                    {
+                        foreach (var emote in Program.FFZEmotes)
+                        {
+                            if (code == emote.Code)
+                            {
+                                Console.WriteLine(emote.Code);
+                                reply = "http://cdn.frankerfacez.com/emoticon/" + emote.Id + "/2";
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
                 }
                 if (found)
                     break;
