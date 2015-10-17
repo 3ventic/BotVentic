@@ -47,6 +47,18 @@ namespace BotVentic
                             break;
                         }
                     }
+
+                    if (!found) {
+                        foreach (var emote in Program.BttvEmotes)
+                        {
+                            if (code == emote.Code)
+                            {
+                                reply = "http:" + Program.BttvTemplate.Replace("{{id}}", emote.Id).Replace("{{image}}", "3x");
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
                 }
                 if (found)
                     break;
