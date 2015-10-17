@@ -37,42 +37,13 @@ namespace BotVentic
                 bool found = false;
                 if (word.StartsWith("#"))
                 {
-                    string code = word.Replace("#", "");
-                    foreach (var emote in Program.Emotes)
-                    {
-                        if (code == emote.Code)
-                        {
-                            reply = "http://emote.3v.fi/2.0/" + emote.Id + ".png";
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (!found) {
-                        foreach (var emote in Program.BttvEmotes)
-                        {
-                            if (code == emote.Code)
-                            {
-                                reply = "http:" + Program.BttvTemplate.Replace("{{id}}", emote.Id).Replace("{{image}}", "2x");
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-                    
-                    if (!found)
-                    {
-                        foreach (var emote in Program.FFZEmotes)
-                        {
-                            if (code == emote.Code)
-                            {
-                                Console.WriteLine(emote.Code);
-                                reply = "http://cdn.frankerfacez.com/emoticon/" + emote.Id + "/2";
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
+                    string code = word.Substring(1, word.Length - 1);
+                    found = IsWordEmote(code, ref reply);
+                }
+                else if (word.StartsWith(":") && word.EndsWith(":"))
+                {
+                    string code = word.Substring(1, word.Length - 2);
+                    found = IsWordEmote(code, ref reply);
                 }
                 if (found)
                     break;
@@ -103,6 +74,49 @@ namespace BotVentic
             }
 
             return reply;
+        }
+
+
+        private static bool IsWordEmote(string code, ref string reply)
+        {
+            bool found = false;
+            foreach (var emote in Program.Emotes)
+            {
+                if (code == emote.Code)
+                {
+                    reply = "http://emote.3v.fi/2.0/" + emote.Id + ".png";
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                foreach (var emote in Program.BttvEmotes)
+                {
+                    if (code == emote.Code)
+                    {
+                        reply = "http:" + Program.BttvTemplate.Replace("{{id}}", emote.Id).Replace("{{image}}", "2x");
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!found)
+            {
+                foreach (var emote in Program.FFZEmotes)
+                {
+                    if (code == emote.Code)
+                    {
+                        Console.WriteLine(emote.Code);
+                        reply = "http://cdn.frankerfacez.com/emoticon/" + emote.Id + "/2";
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            return found;
         }
 
         private static string HandleCommands(string reply, string[] words)

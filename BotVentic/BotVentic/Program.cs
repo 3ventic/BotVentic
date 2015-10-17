@@ -36,7 +36,7 @@ namespace BotVentic
             Console.WriteLine("Started!");
             UpdateEmotes();
             UpdateBttvEmotes();
-            UpdatedFFZEmotes();
+            UpdateFFZEmotes();
             Console.WriteLine("Emotes acquired!");
 
             var client = new DiscordClient(new DiscordClientConfig());
