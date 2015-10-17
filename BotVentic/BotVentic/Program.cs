@@ -43,7 +43,7 @@ namespace BotVentic
                 Console.WriteLine("Connecting...");
                 try
                 {
-                    await client.Connect(config.Username, config.Password);
+                    await client.Connect(config.Email, config.Password);
                 }
                 catch (Exception ex)
                 {
@@ -51,10 +51,9 @@ namespace BotVentic
                     return;
                 }
                 Console.WriteLine("Connected!");
-
-                if (!client.Servers.Any())
-                    await client.AcceptInvite("0MxJ5frIFo34b08I");
             });
+            Console.WriteLine("Press Any key to quit");
+            Console.ReadKey();
         }
 
 
