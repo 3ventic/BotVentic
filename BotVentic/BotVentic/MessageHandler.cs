@@ -43,7 +43,7 @@ namespace BotVentic
                 else if (word.StartsWith(":") && word.EndsWith(":"))
                 {
                     string code = word.Substring(1, word.Length - 2);
-                    found = IsWordEmote(code, ref reply);
+                    found = IsWordEmote(code, ref reply, false);
                 }
                 if (found)
                     break;
@@ -77,12 +77,14 @@ namespace BotVentic
         }
 
 
-        private static bool IsWordEmote(string code, ref string reply)
+        private static bool IsWordEmote(string code, ref string reply, bool caseSensitive = true)
         {
+            Func<string, string, bool> emoteComparer = (first, second) => { return caseSensitive ? (first == second) : (first.ToLower() == second.ToLower()); };
             bool found = false;
+
             foreach (var emote in Program.Emotes)
             {
-                if (code == emote.Code)
+                if (emoteComparer(code, emote.Code))
                 {
                     reply = "http://emote.3v.fi/2.0/" + emote.Id + ".png";
                     found = true;
@@ -94,7 +96,7 @@ namespace BotVentic
             {
                 foreach (var emote in Program.BttvEmotes)
                 {
-                    if (code == emote.Code)
+                    if (emoteComparer(code, emote.Code))
                     {
                         reply = "http:" + Program.BttvTemplate.Replace("{{id}}", emote.Id).Replace("{{image}}", "2x");
                         found = true;
@@ -107,7 +109,7 @@ namespace BotVentic
             {
                 foreach (var emote in Program.FFZEmotes)
                 {
-                    if (code == emote.Code)
+                    if (emoteComparer(code, emote.Code))
                     {
                         Console.WriteLine(emote.Code);
                         reply = "http://cdn.frankerfacez.com/emoticon/" + emote.Id + "/2";
@@ -118,6 +120,7 @@ namespace BotVentic
             }
             return found;
         }
+
 
         private static string HandleCommands(string reply, string[] words)
         {
