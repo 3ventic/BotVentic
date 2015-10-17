@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 
 namespace BotVentic
@@ -18,6 +17,8 @@ namespace BotVentic
 
         static void Main(string[] args)
         {
+            Console.WriteLine("Version " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+
             Config config;
             if (File.Exists("config.json"))
             {
@@ -34,9 +35,11 @@ namespace BotVentic
             }
 
             Console.WriteLine("Started!");
+
             UpdateEmotes();
             UpdateBttvEmotes();
             UpdateFFZEmotes();
+
             Console.WriteLine("Emotes acquired!");
 
             var client = new DiscordClient(new DiscordClientConfig());
