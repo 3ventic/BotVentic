@@ -12,6 +12,8 @@ namespace BotVentic
     class Program
     {
         public static List<Emoticon> Emotes { get; private set; }
+        public static List<BttvEmoticon> BttvEmotes { get; private set; }
+        public static string BttvTemplate { get; private set; }
 
         static void Main(string[] args)
         {
@@ -32,6 +34,7 @@ namespace BotVentic
 
             Console.WriteLine("Started!");
             UpdateEmotes();
+            UpdateBttvEmotes();
             Console.WriteLine("Emotes acquired!");
 
             var client = new DiscordClient(new DiscordClientConfig());
@@ -64,6 +67,16 @@ namespace BotVentic
         {
             var emotes = JsonConvert.DeserializeObject<EmoticonImages>(Request("https://api.twitch.tv/kraken/chat/emoticon_images"));
             Emotes = emotes.Emotes;
+        }
+
+        /// <summary>
+        /// Update list of betterttv emoticons
+        /// </summary>
+        public static void UpdateBttvEmotes()
+        {
+            var emotes = JsonConvert.DeserializeObject<BttvEmoticonImages>(Request("https://api.betterttv.net/2/emotes"));
+            BttvEmotes = emotes.Emotes;
+            BttvTemplate = emotes.Template;
         }
 
 
