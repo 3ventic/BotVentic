@@ -13,6 +13,7 @@ namespace BotVentic
     {
         public static List<Emoticon> Emotes { get; private set; }
         public static List<BttvEmoticon> BttvEmotes { get; private set; }
+        public static List<FFZEmoticon> FFZEmotes { get; private set; }
         public static string BttvTemplate { get; private set; }
 
         static void Main(string[] args)
@@ -35,6 +36,7 @@ namespace BotVentic
             Console.WriteLine("Started!");
             UpdateEmotes();
             UpdateBttvEmotes();
+            UpdatedFFZEmotes();
             Console.WriteLine("Emotes acquired!");
 
             var client = new DiscordClient(new DiscordClientConfig());
@@ -77,6 +79,20 @@ namespace BotVentic
             var emotes = JsonConvert.DeserializeObject<BttvEmoticonImages>(Request("https://api.betterttv.net/2/emotes"));
             BttvEmotes = emotes.Emotes;
             BttvTemplate = emotes.Template;
+        }
+        
+        /// <summary>
+        /// Update the list of FrankerFaceZ emoticons
+        /// </summary>
+        public static void UpdateFFZEmotes()
+        {
+            FFZEmotes = new List<FFZEmoticon>();
+            var emotes = JsonConvert.DeserializeObject<FFZEmoticonSets>(Request("http://api.frankerfacez.com/v1/set/global"));
+            foreach (FFZEmoticonImages set in emotes.Sets.Values)
+            {
+                Console.WriteLine("Added FFZ Set");
+                FFZEmotes.AddRange(set.Emotes);
+            }
         }
 
 
