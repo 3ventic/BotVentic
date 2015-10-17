@@ -53,7 +53,7 @@ namespace BotVentic
                         {
                             if (code == emote.Code)
                             {
-                                reply = "http:" + Program.BttvTemplate.Replace("{{id}}", emote.Id).Replace("{{image}}", "3x");
+                                reply = "http:" + Program.BttvTemplate.Replace("{{id}}", emote.Id).Replace("{{image}}", "2x");
                                 found = true;
                                 break;
                             }
