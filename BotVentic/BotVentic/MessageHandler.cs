@@ -29,6 +29,32 @@ namespace BotVentic
             }
         }
 
+        public static async void HandleEdits(object client, MessageEventArgs e)
+        {
+            if (e != null && e.Message != null)
+            {
+                Console.WriteLine("Words being Edited");
+                bool calcDate = (DateTime.Now - e.Message.Timestamp).Minutes < Program.EditThreshold;
+                string server = e.Message.Server == null ? "101" : e.Message.Server.Name;
+                string user = e.Message.User == null ? "?" : e.Message.User.Name;
+                Console.WriteLine(String.Format("[{0}][Edit] {1}: {2}", server, user, e.Message.RawText));
+                string reply = null;
+                string[] words = e.Message.RawText.Split(' ');
+
+                reply = HandleCommands(reply, words);
+
+                if (reply == null)
+                {
+                    reply = HandleEmotesAndConversions(reply, words);
+                }
+
+                if (!String.IsNullOrWhiteSpace(reply))
+                {
+                    await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
+                }
+            }
+        }
+
         private static string HandleEmotesAndConversions(string reply, string[] words)
         {
             for (int i = words.Length - 1; i >= 0; --i)
@@ -98,7 +124,7 @@ namespace BotVentic
                 {
                     if (emoteComparer(code, emote.Code))
                     {
-                        reply = "http:" + Program.BttvTemplate.Replace("{{id}}", emote.Id).Replace("{{image}}", "2x");
+                        reply = "https:" + Program.BttvTemplate.Replace("{{id}}", emote.Id).Replace("{{image}}", "2x");
                         found = true;
                         break;
                     }

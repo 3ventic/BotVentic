@@ -1,4 +1,5 @@
 ﻿{
   "email": "",
-  "password": ""
+  "password": "",
+  "editthreshold":  1
 }

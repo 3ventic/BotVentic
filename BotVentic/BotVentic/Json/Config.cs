@@ -9,5 +9,8 @@ namespace BotVentic.Json
 
         [JsonProperty("password")]
         public string Password { get; set; }
+
+        [JsonProperty("editthreshold")]
+        public int EditThreshold { get; set; }
     }
 }
