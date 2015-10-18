@@ -48,6 +48,7 @@ namespace BotVentic
             var client = new DiscordClient(new DiscordClientConfig());
 
             client.MessageCreated += MessageHandler.HandleIncomingMessage;
+            client.MessageUpdated += MessageHandler.HandleEdit;
 
             client.Run(async () =>
             {

@@ -12,12 +12,21 @@ namespace BotVentic
             {
                 string server = e.Message.Server == null ? "1-1" : e.Message.Server.Name;
                 string user = e.Message.User == null ? "?" : e.Message.User.Name;
-                Console.WriteLine("[" + server + "][Message] " + user + ": " + e.Message.RawText);
+                Console.WriteLine("[{0}][Message] {1}: {2}", server, user, e.Message.RawText);
                 string reply = null;
                 string[] words = e.Message.RawText.Split(' ');
 
                 if (words[0] == "invite" && words.Length >= 2)
-                    await ((DiscordClient)client).AcceptInvite(words[1]);
+                {
+                    try
+                    {
+                        await ((DiscordClient)client).AcceptInvite(words[1]);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                    }
+                }
 
                 reply = HandleCommands(reply, words);
 
@@ -29,7 +38,7 @@ namespace BotVentic
             }
         }
 
-        public static async void HandleEdits(object client, MessageEventArgs e)
+        public static async void HandleEdit(object client, MessageEventArgs e)
         {
             if (e != null && e.Message != null)
             {
