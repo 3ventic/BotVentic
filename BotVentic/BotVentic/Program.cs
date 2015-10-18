@@ -15,6 +15,8 @@ namespace BotVentic
         public static List<FFZEmoticon> FFZEmotes { get; private set; }
         public static string BttvTemplate { get; private set; }
 
+        public static int EditThreshold { get; set; }
+
         static void Main(string[] args)
         {
             Console.WriteLine("Version " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
@@ -25,6 +27,7 @@ namespace BotVentic
                 using (StreamReader sr = new StreamReader("config.json"))
                 {
                     config = JsonConvert.DeserializeObject<Config>(sr.ReadToEnd());
+                    EditThreshold = config.EditThreshold;
                 }
             }
             else
