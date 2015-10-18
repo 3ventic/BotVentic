@@ -124,7 +124,7 @@ namespace BotVentic
                 {
                     if (emoteComparer(code, emote.Code))
                     {
-                        reply = "http:" + Program.BttvTemplate.Replace("{{id}}", emote.Id).Replace("{{image}}", "2x");
+                        reply = "https:" + Program.BttvTemplate.Replace("{{id}}", emote.Id).Replace("{{image}}", "2x");
                         found = true;
                         break;
                     }
