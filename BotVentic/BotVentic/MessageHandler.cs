@@ -35,7 +35,7 @@ namespace BotVentic
             {
                 Console.WriteLine("Words being Edited");
                 bool calcDate = (DateTime.Now - e.Message.Timestamp).Minutes < Program.EditThreshold;
-                string server = e.Message.Server == null ? "101" : e.Message.Server.Name;
+                string server = e.Message.Server == null ? "1-1" : e.Message.Server.Name;
                 string user = e.Message.User == null ? "?" : e.Message.User.Name;
                 Console.WriteLine(String.Format("[{0}][Edit] {1}: {2}", server, user, e.Message.RawText));
                 string reply = null;
@@ -66,7 +66,7 @@ namespace BotVentic
                     string code = word.Substring(1, word.Length - 1);
                     found = IsWordEmote(code, ref reply);
                 }
-                else if (word.StartsWith(":") && word.EndsWith(":"))
+                else if (word.StartsWith(":") && word.EndsWith(":") && word.Length > 2)
                 {
                     string code = word.Substring(1, word.Length - 2);
                     found = IsWordEmote(code, ref reply, false);
