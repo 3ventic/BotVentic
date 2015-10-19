@@ -40,9 +40,8 @@ namespace BotVentic
 
         public static async void HandleEdit(object client, MessageEventArgs e)
         {
-            if (e != null && e.Message != null)
+            if (e != null && e.Message != null && !e.Message.IsAuthor)
             {
-                Console.WriteLine("Words being Edited");
                 bool calcDate = (DateTime.Now - e.Message.Timestamp).Minutes < Program.EditThreshold;
                 string server = e.Message.Server == null ? "1-1" : e.Message.Server.Name;
                 string user = e.Message.User == null ? "?" : e.Message.User.Name;
