@@ -1,5 +1,6 @@
 ﻿{
   "email": "",
   "password": "",
-  "editthreshold":  1
+  "editthreshold": 1,
+  "editmax":  10
 }

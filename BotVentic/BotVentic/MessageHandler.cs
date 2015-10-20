@@ -1,6 +1,8 @@
 ﻿using Discord;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BotVentic
 {
@@ -34,15 +36,17 @@ namespace BotVentic
                     reply = HandleEmotesAndConversions(reply, words);
 
                 if (!String.IsNullOrWhiteSpace(reply))
-                    await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
+                {
+                    Message[] x = await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
+                    AddPrevMsg(x[0], e.Message);
+                }
             }
         }
 
         public static async void HandleEdit(object client, MessageEventArgs e)
         {
-            if (e != null && e.Message != null)
+            if (e != null && e.Message != null && !e.Message.IsAuthor)
             {
-                Console.WriteLine("Words being Edited");
                 bool calcDate = (DateTime.Now - e.Message.Timestamp).Minutes < Program.EditThreshold;
                 string server = e.Message.Server == null ? "1-1" : e.Message.Server.Name;
                 string user = e.Message.User == null ? "?" : e.Message.User.Name;
@@ -57,9 +61,18 @@ namespace BotVentic
                     reply = HandleEmotesAndConversions(reply, words);
                 }
 
-                if (!String.IsNullOrWhiteSpace(reply))
+                if (!String.IsNullOrWhiteSpace(reply) && calcDate)
                 {
-                    await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
+                    Message botRelation = BotMessageExists(client, e.Message.Id);
+                    if (botRelation == null && e.Message.Embeds.Length == 0)
+                    {
+                        Message[] x = await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
+                        AddPrevMsg(x[0], e.Message);
+                    }
+                    else if (botRelation != null && e.Message.Embeds.Length > 0)
+                    {
+                        await ((DiscordClient)client).EditMessage(botRelation, text: reply);
+                    }
                 }
             }
         }
@@ -204,9 +217,33 @@ namespace BotVentic
                 case "!source":
                     reply = "https://github.com/3ventic/BotVentic";
                     break;
+                case "!frozenpizza":
+                    reply = "http://emote.3v.fi/2.0/" + 12131 + ".png";
+                    break;
             }
 
             return reply;
+        }
+
+        private static void AddPrevMsg(Message bot, Message user)
+        {
+            if (Program.PreviousMessages.Count >= Program.EditMax)
+            {
+                Program.PreviousMessages.Remove(Program.PreviousMessages.Keys.ElementAt(0));
+            }
+            Program.PreviousMessages.Add(bot, user);
+        }
+
+        private static Message BotMessageExists(object client, string id)
+        {
+            foreach (KeyValuePair<Message, Message> item in Program.PreviousMessages)
+            {
+                if (item.Value.Id == id)
+                {
+                    return item.Key;
+                }
+            }
+            return null;
         }
     }
 }
