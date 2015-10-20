@@ -70,7 +70,7 @@ namespace BotVentic
                         AddPrevMsg(x[0], e.Message);
                     }
                     else if (botRelation != null && e.Message.Embeds.Length > 0)
-                    {
+                {
                         await ((DiscordClient)client).EditMessage(botRelation, text: reply);
                     }
                 }
@@ -178,20 +178,27 @@ namespace BotVentic
                 case "!stream":
                     if (words.Length > 1)
                     {
-                        var streams = JsonConvert.DeserializeObject<Json.Streams>(Program.Request("https://api.twitch.tv/kraken/streams/" + words[1].ToLower() + "?stream_type=all"));
-                        if (streams.Stream == null)
+                        string json = Program.Request("https://api.twitch.tv/kraken/streams/" + words[1].ToLower() + "?stream_type=all");
+                        if (json != null)
                         {
-                            reply = "The channel is currently *offline*";
-                        }
-                        else
-                        {
-                            long ticks = DateTime.UtcNow.Ticks - streams.Stream.CreatedAt.Ticks;
-                            TimeSpan ts = new TimeSpan(ticks);
-                            reply = "**[" + streams.Stream.Channel.DisplayName + "]**" + (streams.Stream.Channel.IsPartner ? @"\*" : "") + " " + (streams.Stream.IsPlaylist ? "(Playlist)" : "")
-                                + "\n**Title**: " + streams.Stream.Channel.Status.Replace("*", @"\*")
-                                + "\n**Game:** " + streams.Stream.Game + "\n**Viewers**: " + streams.Stream.Viewers
-                                + "\n**Uptime**: " + ts.ToString(@"d' day" + (ts.Days == 1 ? "" : "s") + @" 'hh\:mm\:ss")
-                                + "\n**Quality**: " + streams.Stream.VideoHeight + "p" + Math.Ceiling(streams.Stream.FramesPerSecond);
+                            var streams = JsonConvert.DeserializeObject<Json.Streams>(json);
+                            if (streams != null)
+                            {
+                                if (streams.Stream == null)
+                                {
+                                    reply = "The channel is currently *offline*";
+                                }
+                                else
+                                {
+                                    long ticks = DateTime.UtcNow.Ticks - streams.Stream.CreatedAt.Ticks;
+                                    TimeSpan ts = new TimeSpan(ticks);
+                                    reply = "**[" + NullToEmpty(streams.Stream.Channel.DisplayName) + "]**" + (streams.Stream.Channel.IsPartner ? @"\*" : "") + " " + (streams.Stream.IsPlaylist ? "(Playlist)" : "")
+                                        + "\n**Title**: " + NullToEmpty(streams.Stream.Channel.Status).Replace("*", @"\*")
+                                        + "\n**Game:** " + NullToEmpty(streams.Stream.Game) + "\n**Viewers**: " + streams.Stream.Viewers
+                                        + "\n**Uptime**: " + ts.ToString(@"d' day" + (ts.Days == 1 ? "" : "s") + @" 'hh\:mm\:ss")
+                                        + "\n**Quality**: " + streams.Stream.VideoHeight + "p" + Math.Ceiling(streams.Stream.FramesPerSecond);
+                                }
+                            }
                         }
                     }
                     else
@@ -202,12 +209,19 @@ namespace BotVentic
                 case "!channel":
                     if (words.Length > 1)
                     {
-                        var channel = JsonConvert.DeserializeObject<Json.Channel>(Program.Request("https://api.twitch.tv/kraken/channels/" + words[1].ToLower()));
-                        reply = "**[" + channel.DisplayName + "]**"
-                            + "\n**Partner**: " + (channel.IsPartner ? "Yes" : "No")
-                            + "\n**Title**: " + channel.Status.Replace("*", @"\*")
-                            + "\n**Registered**: " + channel.Registered.ToString("yyyy-MM-dd HH:mm") + " UTC"
-                            + "\n**Followers**: " + channel.Followers;
+                        string json = Program.Request("https://api.twitch.tv/kraken/channels/" + words[1].ToLower());
+                        if (json != null)
+                        {
+                            var channel = JsonConvert.DeserializeObject<Json.Channel>(json);
+                            if (channel != null && channel.DisplayName != null)
+                            {
+                                reply = "**[" + NullToEmpty(channel.DisplayName) + "]**"
+                                + "\n**Partner**: " + (channel.IsPartner ? "Yes" : "No")
+                                + "\n**Title**: " + NullToEmpty(channel.Status).Replace("*", @"\*")
+                                + "\n**Registered**: " + NullToEmpty(channel.Registered.ToString("yyyy-MM-dd HH:mm")) + " UTC"
+                                + "\n**Followers**: " + channel.Followers;
+                            }
+                        }
                     }
                     else
                     {
@@ -224,7 +238,6 @@ namespace BotVentic
 
             return reply;
         }
-
         private static void AddPrevMsg(Message bot, Message user)
         {
             if (Program.PreviousMessages.Count >= Program.EditMax)
@@ -244,6 +257,11 @@ namespace BotVentic
                 }
             }
             return null;
+        }
+
+        private static string NullToEmpty(string str)
+        {
+            return (str == null) ? "" : str;
         }
     }
 }
