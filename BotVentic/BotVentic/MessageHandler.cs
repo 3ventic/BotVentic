@@ -193,10 +193,10 @@ namespace BotVentic
                                     long ticks = DateTime.UtcNow.Ticks - streams.Stream.CreatedAt.Ticks;
                                     TimeSpan ts = new TimeSpan(ticks);
                                     reply = "**[" + NullToEmpty(streams.Stream.Channel.DisplayName) + "]**" + (streams.Stream.Channel.IsPartner ? @"\*" : "") + " " + (streams.Stream.IsPlaylist ? "(Playlist)" : "")
-                                        + "\n**Title**: " + NullToEmpty(streams.Stream.Channel.Status).Replace("*", @"\*")
-                                        + "\n**Game:** " + NullToEmpty(streams.Stream.Game) + "\n**Viewers**: " + streams.Stream.Viewers
-                                        + "\n**Uptime**: " + ts.ToString(@"d' day" + (ts.Days == 1 ? "" : "s") + @" 'hh\:mm\:ss")
-                                        + "\n**Quality**: " + streams.Stream.VideoHeight + "p" + Math.Ceiling(streams.Stream.FramesPerSecond);
+                                          + "\n**Title**: " + NullToEmpty(streams.Stream.Channel.Status).Replace("*", @"\*")
+                                          + "\n**Game:** " + NullToEmpty(streams.Stream.Game) + "\n**Viewers**: " + streams.Stream.Viewers
+                                          + "\n**Uptime**: " + ts.ToString(@"d' day" + (ts.Days == 1 ? "" : "s") + @" 'hh\:mm\:ss")
+                                          + "\n**Quality**: " + streams.Stream.VideoHeight + "p" + Math.Ceiling(streams.Stream.FramesPerSecond);
                                 }
                             }
                         }
@@ -216,10 +216,10 @@ namespace BotVentic
                             if (channel != null && channel.DisplayName != null)
                             {
                                 reply = "**[" + NullToEmpty(channel.DisplayName) + "]**"
-                                + "\n**Partner**: " + (channel.IsPartner ? "Yes" : "No")
-                                + "\n**Title**: " + NullToEmpty(channel.Status).Replace("*", @"\*")
-                                + "\n**Registered**: " + NullToEmpty(channel.Registered.ToString("yyyy-MM-dd HH:mm")) + " UTC"
-                                + "\n**Followers**: " + channel.Followers;
+                                      + "\n**Partner**: " + (channel.IsPartner ? "Yes" : "No")
+                                      + "\n**Title**: " + NullToEmpty(channel.Status).Replace("*", @"\*")
+                                      + "\n**Registered**: " + NullToEmpty(channel.Registered.ToString("yyyy-MM-dd HH:mm")) + " UTC"
+                                      + "\n**Followers**: " + channel.Followers;
                             }
                         }
                     }
