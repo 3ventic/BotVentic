@@ -69,8 +69,12 @@ namespace BotVentic
                         Message[] x = await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
                         AddPrevMsg(x[0], e.Message);
                     }
+                    else if (botRelation != null && e.Message.Embeds.Length == 0)
+                    {
+                        await ((DiscordClient)client).EditMessage(botRelation, text: reply);
+                    }
                     else if (botRelation != null && e.Message.Embeds.Length > 0)
-                {
+                    {
                         await ((DiscordClient)client).EditMessage(botRelation, text: reply);
                     }
                 }
