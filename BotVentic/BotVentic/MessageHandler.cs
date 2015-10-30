@@ -235,8 +235,25 @@ namespace BotVentic
                 case "!source":
                     reply = "https://github.com/3ventic/BotVentic";
                     break;
+                case "!frozen":
+                    if (words.Length > 2 || words[1] != "pizza")
+                        break;
+                    // Fall through to frozenpizza
+                    goto case "!frozenpizza";
                 case "!frozenpizza":
-                    reply = "http://emote.3v.fi/2.0/" + 12131 + ".png";
+                    reply = "*starts making a frozen pizza*";
+                    break;
+                case "!update":
+                    if (words.Length > 1)
+                    {
+                        switch (words[1])
+                        {
+                            case "emotes":
+                                Program.UpdateAllEmotes();
+                                reply = "*updated list of known emotes*";
+                                break;
+                        }
+                    }
                     break;
             }
 

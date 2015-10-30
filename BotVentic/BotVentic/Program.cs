@@ -45,9 +45,7 @@ namespace BotVentic
 
             Console.WriteLine("Started!");
 
-            UpdateEmotes();
-            UpdateBttvEmotes();
-            UpdateFFZEmotes();
+            UpdateAllEmotes();
 
             Console.WriteLine("Emotes acquired!");
 
@@ -74,6 +72,15 @@ namespace BotVentic
             Console.ReadKey();
         }
 
+        /// <summary>
+        /// Update the list of all emoticons
+        /// </summary>
+        public static void UpdateAllEmotes()
+        {
+            UpdateEmotes();
+            UpdateBttvEmotes();
+            UpdateFFZEmotes();
+        }
 
         /// <summary>
         /// Update the list of emoticons
