@@ -16,10 +16,15 @@ namespace BotVentic
         public static string BttvTemplate { get; private set; }
 
         public static int EditThreshold { get; set; }
+        public static int EditMax { get; set; }
+
+        // Contains BotMessage > UserMessage pair for comparison
+        public static Dictionary<Message, Message> PreviousMessages { get; set; }
 
         static void Main(string[] args)
         {
             Console.WriteLine("Version " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            PreviousMessages = new Dictionary<Message, Message>();
 
             Config config;
             if (File.Exists("config.json"))
@@ -28,6 +33,7 @@ namespace BotVentic
                 {
                     config = JsonConvert.DeserializeObject<Config>(sr.ReadToEnd());
                     EditThreshold = config.EditThreshold;
+                    EditMax = config.EditMax;
                 }
             }
             else

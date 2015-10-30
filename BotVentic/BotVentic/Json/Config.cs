@@ -12,5 +12,8 @@ namespace BotVentic.Json
 
         [JsonProperty("editthreshold")]
         public int EditThreshold { get; set; }
+
+        [JsonProperty("editmax")]
+        public int EditMax { get; set; }
     }
 }
