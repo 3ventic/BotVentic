@@ -262,7 +262,7 @@ namespace BotVentic
 
         private static void AddBotReply(Message bot, Message user)
         {
-            if (Program.BotReplies.Count >= Program.EditMax)
+            if (Program.BotReplies.Count > Program.EditMax)
             {
                 Program.BotReplies.Remove(Program.BotReplies.Keys.ElementAt(0));
             }
