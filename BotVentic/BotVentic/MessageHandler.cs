@@ -38,7 +38,7 @@ namespace BotVentic
                 if (!String.IsNullOrWhiteSpace(reply))
                 {
                     Message[] x = await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
-                    AddPrevMsg(x[0], e.Message);
+                    AddBotReply(x[0], e.Message);
                 }
             }
         }
@@ -63,11 +63,11 @@ namespace BotVentic
 
                 if (!String.IsNullOrWhiteSpace(reply) && calcDate)
                 {
-                    Message botRelation = BotMessageExists(client, e.Message.Id);
+                    Message botRelation = GetExistingBotReplyOrNull(client, e.Message.Id);
                     if (botRelation == null && e.Message.Embeds.Length == 0)
                     {
                         Message[] x = await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
-                        AddPrevMsg(x[0], e.Message);
+                        AddBotReply(x[0], e.Message);
                     }
                     else if (botRelation != null && e.Message.Embeds.Length == 0)
                     {
@@ -242,18 +242,19 @@ namespace BotVentic
 
             return reply;
         }
-        private static void AddPrevMsg(Message bot, Message user)
+
+        private static void AddBotReply(Message bot, Message user)
         {
-            if (Program.PreviousMessages.Count >= Program.EditMax)
+            if (Program.BotReplies.Count >= Program.EditMax)
             {
-                Program.PreviousMessages.Remove(Program.PreviousMessages.Keys.ElementAt(0));
+                Program.BotReplies.Remove(Program.BotReplies.Keys.ElementAt(0));
             }
-            Program.PreviousMessages.Add(bot, user);
+            Program.BotReplies.Add(bot, user);
         }
 
-        private static Message BotMessageExists(object client, string id)
+        private static Message GetExistingBotReplyOrNull(object client, string id)
         {
-            foreach (KeyValuePair<Message, Message> item in Program.PreviousMessages)
+            foreach (KeyValuePair<Message, Message> item in Program.BotReplies)
             {
                 if (item.Value.Id == id)
                 {

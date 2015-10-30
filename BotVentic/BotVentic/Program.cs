@@ -19,12 +19,12 @@ namespace BotVentic
         public static int EditMax { get; set; }
 
         // Contains BotMessage > UserMessage pair for comparison
-        public static Dictionary<Message, Message> PreviousMessages { get; set; }
+        public static Dictionary<Message, Message> BotReplies { get; set; }
 
         static void Main(string[] args)
         {
             Console.WriteLine("Version " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
-            PreviousMessages = new Dictionary<Message, Message>();
+            BotReplies = new Dictionary<Message, Message>();
 
             Config config;
             if (File.Exists("config.json"))
