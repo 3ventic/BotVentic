@@ -8,6 +8,8 @@ namespace BotVentic
 {
     class MessageHandler
     {
+        private static Dictionary<Message, Message> BotReplies = new Dictionary<Message, Message>();
+
         public static async void HandleIncomingMessage(object client, MessageEventArgs e)
         {
             if (e != null && e.Message != null && !e.Message.IsAuthor)
@@ -262,16 +264,16 @@ namespace BotVentic
 
         private static void AddBotReply(Message bot, Message user)
         {
-            if (Program.BotReplies.Count > Program.EditMax)
+            if (BotReplies.Count > Program.EditMax)
             {
-                Program.BotReplies.Remove(Program.BotReplies.Keys.ElementAt(0));
+                BotReplies.Remove(BotReplies.Keys.ElementAt(0));
             }
-            Program.BotReplies.Add(bot, user);
+            BotReplies.Add(bot, user);
         }
 
         private static Message GetExistingBotReplyOrNull(object client, string id)
         {
-            foreach (KeyValuePair<Message, Message> item in Program.BotReplies)
+            foreach (KeyValuePair<Message, Message> item in BotReplies)
             {
                 if (item.Value.Id == id)
                 {
