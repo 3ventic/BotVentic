@@ -20,6 +20,7 @@ namespace BotVentic
         static void Main(string[] args)
         {
             Console.WriteLine("Version " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            DictEmotes = new Dictionary<string, string[]>();
 
             Config config;
             if (File.Exists("config.json"))
@@ -72,6 +73,7 @@ namespace BotVentic
         /// </summary>
         public static void UpdateAllEmotes()
         {
+            DictEmotes.Clear();
             UpdateEmotes();
             UpdateBttvEmotes();
             UpdateFFZEmotes();
