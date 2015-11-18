@@ -10,9 +10,8 @@ namespace BotVentic
 {
     class Program
     {
-        public static List<Emoticon> Emotes { get; private set; }
-        public static List<BttvEmoticon> BttvEmotes { get; private set; }
-        public static List<FFZEmoticon> FFZEmotes { get; private set; }
+        // DictEmotes <EmoteCode, { emote_id, emote_type }>
+        public static Dictionary<string, string[]> DictEmotes { get; private set; }
         public static string BttvTemplate { get; private set; }
 
         public static int EditThreshold { get; set; }
@@ -21,6 +20,7 @@ namespace BotVentic
         static void Main(string[] args)
         {
             Console.WriteLine("Version " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            DictEmotes = new Dictionary<string, string[]>();
 
             Config config;
             if (File.Exists("config.json"))
@@ -73,6 +73,7 @@ namespace BotVentic
         /// </summary>
         public static void UpdateAllEmotes()
         {
+            DictEmotes.Clear();
             UpdateEmotes();
             UpdateBttvEmotes();
             UpdateFFZEmotes();
@@ -84,7 +85,15 @@ namespace BotVentic
         public static void UpdateEmotes()
         {
             var emotes = JsonConvert.DeserializeObject<EmoticonImages>(Request("https://api.twitch.tv/kraken/chat/emoticon_images"));
-            Emotes = emotes.Emotes;
+            //Emotes = emotes.Emotes;
+            foreach (var em in emotes.Emotes)
+            {
+                try
+                {
+                    DictEmotes.Add(em.Code, new string[] { "" + em.Id, "twitch" });
+                }
+                catch { }
+            }
         }
 
         /// <summary>
@@ -93,21 +102,35 @@ namespace BotVentic
         public static void UpdateBttvEmotes()
         {
             var emotes = JsonConvert.DeserializeObject<BttvEmoticonImages>(Request("https://api.betterttv.net/2/emotes"));
-            BttvEmotes = emotes.Emotes;
-            BttvTemplate = emotes.Template;
+            //BttvEmotes = emotes.Emotes;
+            foreach (var em in emotes.Emotes)
+            {
+                try
+                {
+                    DictEmotes.Add(em.Code, new string[] { "" + em.Id, "bttv" });
+                }
+                catch { }
+            }
         }
-        
+
+
         /// <summary>
         /// Update the list of FrankerFaceZ emoticons
         /// </summary>
         public static void UpdateFFZEmotes()
         {
-            FFZEmotes = new List<FFZEmoticon>();
+            List<FFZEmoticon> FFZEmotes = new List<FFZEmoticon>();
             var emotes = JsonConvert.DeserializeObject<FFZEmoticonSets>(Request("http://api.frankerfacez.com/v1/set/global"));
             foreach (FFZEmoticonImages set in emotes.Sets.Values)
             {
-                Console.WriteLine("Added FFZ Set");
-                FFZEmotes.AddRange(set.Emotes);
+                foreach (var em in set.Emotes)
+                {
+                    try
+                    {
+                        DictEmotes.Add(em.Code, new string[] { "" + em.Id, "ffz" });
+                    }
+                    catch { }
+                }
             }
         }
 

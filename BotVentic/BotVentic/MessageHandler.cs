@@ -39,8 +39,12 @@ namespace BotVentic
 
                 if (!String.IsNullOrWhiteSpace(reply))
                 {
-                    Message[] x = await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
-                    AddBotReply(x[0], e.Message);
+                    // Only post if embed aren't found, otherwise let the edit handler deal with it.
+                    if (e.Message.Embeds.Length == 0)
+                    {
+                        Message[] x = await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
+                        AddBotReply(x[0], e.Message);
+                    }
                 }
             }
         }
@@ -65,17 +69,13 @@ namespace BotVentic
 
                 if (!String.IsNullOrWhiteSpace(reply) && calcDate)
                 {
-                    Message botRelation = GetExistingBotReplyOrNull(client, e.Message.Id);
-                    if (botRelation == null && e.Message.Embeds.Length == 0)
+                    Message botRelation = GetExistingBotReplyOrNull(e.Message.Id);
+                    if (botRelation == null)
                     {
                         Message[] x = await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
                         AddBotReply(x[0], e.Message);
                     }
-                    else if (botRelation != null && e.Message.Embeds.Length == 0)
-                    {
-                        await ((DiscordClient)client).EditMessage(botRelation, text: reply);
-                    }
-                    else if (botRelation != null && e.Message.Embeds.Length > 0)
+                    else if (botRelation != null)
                     {
                         await ((DiscordClient)client).EditMessage(botRelation, text: reply);
                     }
@@ -135,44 +135,33 @@ namespace BotVentic
         {
             Func<string, string, bool> emoteComparer = (first, second) => { return caseSensitive ? (first == second) : (first.ToLower() == second.ToLower()); };
             bool found = false;
+            string[] emote_info;
 
-            foreach (var emote in Program.Emotes)
+            if (Program.DictEmotes.TryGetValue(code, out emote_info))
             {
-                if (emoteComparer(code, emote.Code))
+                found = true;
+                switch (emote_info[1])
                 {
-                    reply = "http://emote.3v.fi/2.0/" + emote.Id + ".png";
-                    found = true;
-                    break;
+                    case "twitch":
+                        reply = "http://emote.3v.fi/2.0/" + emote_info[0] + ".png"; break;
+                    case "bttv":
+                        reply = "https:" + Program.BttvTemplate.Replace("{{id}}", emote_info[0]).Replace("{{image}}", "2x"); break;
+                    case "ffz":
+                        reply = "http://cdn.frankerfacez.com/emoticon/" + emote_info[0] + "/2"; break;
                 }
             }
-
-            if (!found)
+            else
             {
-                foreach (var emote in Program.BttvEmotes)
+                foreach (var emote in Program.DictEmotes.Keys)
                 {
-                    if (emoteComparer(code, emote.Code))
+                    if (emoteComparer(code, emote.ToLower()))
                     {
-                        reply = "https:" + Program.BttvTemplate.Replace("{{id}}", emote.Id).Replace("{{image}}", "2x");
+                        reply = "http://emote.3v.fi/2.0/" + Program.DictEmotes[emote][0] + ".png";
                         found = true;
                         break;
                     }
                 }
             }
-
-            if (!found)
-            {
-                foreach (var emote in Program.FFZEmotes)
-                {
-                    if (emoteComparer(code, emote.Code))
-                    {
-                        Console.WriteLine(emote.Code);
-                        reply = "http://cdn.frankerfacez.com/emoticon/" + emote.Id + "/2";
-                        found = true;
-                        break;
-                    }
-                }
-            }
-
             return found;
         }
 
@@ -271,7 +260,7 @@ namespace BotVentic
             BotReplies.Add(bot, user);
         }
 
-        private static Message GetExistingBotReplyOrNull(object client, string id)
+        private static Message GetExistingBotReplyOrNull(string id)
         {
             foreach (KeyValuePair<Message, Message> item in BotReplies)
             {
