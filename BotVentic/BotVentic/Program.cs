@@ -102,7 +102,8 @@ namespace BotVentic
         public static void UpdateBttvEmotes()
         {
             var emotes = JsonConvert.DeserializeObject<BttvEmoticonImages>(Request("https://api.betterttv.net/2/emotes"));
-            //BttvEmotes = emotes.Emotes;
+            BttvTemplate = emotes.Template;
+
             foreach (var em in emotes.Emotes)
             {
                 try
@@ -119,7 +120,6 @@ namespace BotVentic
         /// </summary>
         public static void UpdateFFZEmotes()
         {
-            List<FFZEmoticon> FFZEmotes = new List<FFZEmoticon>();
             var emotes = JsonConvert.DeserializeObject<FFZEmoticonSets>(Request("http://api.frankerfacez.com/v1/set/global"));
             foreach (FFZEmoticonImages set in emotes.Sets.Values)
             {
