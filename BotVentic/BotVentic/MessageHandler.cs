@@ -140,23 +140,15 @@ namespace BotVentic
             if (Program.DictEmotes.TryGetValue(code, out emote_info))
             {
                 found = true;
-                switch (emote_info[1])
-                {
-                    case "twitch":
-                        reply = "http://emote.3v.fi/2.0/" + emote_info[0] + ".png"; break;
-                    case "bttv":
-                        reply = "https:" + Program.BttvTemplate.Replace("{{id}}", emote_info[0]).Replace("{{image}}", "2x"); break;
-                    case "ffz":
-                        reply = "http://cdn.frankerfacez.com/emoticon/" + emote_info[0] + "/2"; break;
-                }
+                reply = GetEmoteUrl(emote_info);
             }
             else
             {
                 foreach (var emote in Program.DictEmotes.Keys)
                 {
-                    if (emoteComparer(code, emote.ToLower()))
+                    if (emoteComparer(code, emote))
                     {
-                        reply = "http://emote.3v.fi/2.0/" + Program.DictEmotes[emote][0] + ".png";
+                        reply = GetEmoteUrl(Program.DictEmotes[emote]);
                         found = true;
                         break;
                     }
@@ -165,6 +157,21 @@ namespace BotVentic
             return found;
         }
 
+        private static string GetEmoteUrl(string[] emote_info)
+        {
+            string reply = "";
+            switch (emote_info[1])
+            {
+                case "twitch":
+                    reply = "http://emote.3v.fi/2.0/" + emote_info[0] + ".png"; break;
+                case "bttv":
+                    reply = "https:" + Program.BttvTemplate.Replace("{{id}}", emote_info[0]).Replace("{{image}}", "2x"); break;
+                case "ffz":
+                    reply = "http://cdn.frankerfacez.com/emoticon/" + emote_info[0] + "/2"; break;
+            }
+
+            return reply;
+        }
 
         private static string HandleCommands(string reply, string[] words)
         {

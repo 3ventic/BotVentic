@@ -74,9 +74,9 @@ namespace BotVentic
         public static void UpdateAllEmotes()
         {
             DictEmotes.Clear();
-            UpdateEmotes();
-            UpdateBttvEmotes();
             UpdateFFZEmotes();
+            UpdateBttvEmotes();
+            UpdateEmotes();
         }
 
         /// <summary>
