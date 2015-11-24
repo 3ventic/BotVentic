@@ -175,6 +175,9 @@ namespace BotVentic
 
         private static string HandleCommands(string reply, string[] words)
         {
+            if (words == null || words.Length < 0)
+                return "An error occurred.";
+
             switch (words[0])
             {
                 case "!stream":
@@ -234,7 +237,7 @@ namespace BotVentic
                     reply = "https://github.com/3ventic/BotVentic";
                     break;
                 case "!frozen":
-                    if (words.Length > 2 || words[1] != "pizza")
+                    if (words.Length >= 2 && words[1] != "pizza")
                         break;
                     // Fall through to frozenpizza
                     goto case "!frozenpizza";
