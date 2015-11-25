@@ -85,7 +85,13 @@ namespace BotVentic
         public static void UpdateEmotes()
         {
             var emotes = JsonConvert.DeserializeObject<EmoticonImages>(Request("https://api.twitch.tv/kraken/chat/emoticon_images"));
-            //Emotes = emotes.Emotes;
+
+            if (emotes == null || emotes.Emotes == null)
+            {
+                Console.WriteLine("Error loading twitch emotes!");
+                return;
+            }
+
             foreach (var em in emotes.Emotes)
             {
                 try
@@ -102,6 +108,13 @@ namespace BotVentic
         public static void UpdateBttvEmotes()
         {
             var emotes = JsonConvert.DeserializeObject<BttvEmoticonImages>(Request("https://api.betterttv.net/2/emotes"));
+
+            if (emotes == null || emotes.Template == null || emotes.Emotes == null)
+            {
+                Console.WriteLine("Error loading bttv emotes");
+                return;
+            }
+
             BttvTemplate = emotes.Template;
 
             foreach (var em in emotes.Emotes)
@@ -121,15 +134,25 @@ namespace BotVentic
         public static void UpdateFFZEmotes()
         {
             var emotes = JsonConvert.DeserializeObject<FFZEmoticonSets>(Request("http://api.frankerfacez.com/v1/set/global"));
+
+            if (emotes == null || emotes.Sets == null || emotes.Sets.Values == null)
+            {
+                Console.WriteLine("Error loading ffz emotes");
+                return;
+            }
+
             foreach (FFZEmoticonImages set in emotes.Sets.Values)
             {
-                foreach (var em in set.Emotes)
+                if (set != null && set.Emotes != null)
                 {
-                    try
+                    foreach (var em in set.Emotes)
                     {
-                        DictEmotes.Add(em.Code, new string[] { "" + em.Id, "ffz" });
+                        try
+                        {
+                            DictEmotes.Add(em.Code, new string[] { "" + em.Id, "ffz" });
+                        }
+                        catch { }
                     }
-                    catch { }
                 }
             }
         }
