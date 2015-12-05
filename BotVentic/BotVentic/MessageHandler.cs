@@ -9,6 +9,7 @@ namespace BotVentic
     class MessageHandler
     {
         private static Dictionary<Message, Message> BotReplies = new Dictionary<Message, Message>();
+        private static Dictionary<string, string> LastHandledMessageOnChannel = new Dictionary<string, string>();
 
         public static async void HandleIncomingMessage(object client, MessageEventArgs e)
         {
@@ -39,20 +40,21 @@ namespace BotVentic
 
                 if (!String.IsNullOrWhiteSpace(reply))
                 {
-                    // Only post if embed aren't found, otherwise let the edit handler deal with it.
-                    if (e.Message.Embeds.Length == 0)
-                    {
-                        Message[] x = await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
-                        AddBotReply(x[0], e.Message);
-                    }
+                    LastHandledMessageOnChannel[e.Message.ChannelId] = e.MessageId;
+                    Message[] x = await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
+                    AddBotReply(x[0], e.Message);
                 }
             }
         }
 
         public static async void HandleEdit(object client, MessageEventArgs e)
         {
-            if (e != null && e.Message != null && !e.Message.IsAuthor)
+            // Don't handle own message or any message containing embeds that was *just* replied to
+            if (e != null && e.Message != null && !e.Message.IsAuthor && (e.Message.Embeds.Length == 0 || !IsMessageLastRepliedTo(e)))
             {
+                if (LastHandledMessageOnChannel.ContainsKey(e.Message.ChannelId))
+                    LastHandledMessageOnChannel.Remove(e.Message.ChannelId);
+
                 bool calcDate = (DateTime.Now - e.Message.Timestamp).Minutes < Program.EditThreshold;
                 string server = e.Message.Server == null ? "1-1" : e.Message.Server.Name;
                 string user = e.Message.User == null ? "?" : e.Message.User.Name;
@@ -81,6 +83,11 @@ namespace BotVentic
                     }
                 }
             }
+        }
+
+        private static bool IsMessageLastRepliedTo(MessageEventArgs e)
+        {
+            return (LastHandledMessageOnChannel.ContainsKey(e.Message.ChannelId) && LastHandledMessageOnChannel[e.Message.ChannelId] == e.MessageId);
         }
 
         private static string HandleEmotesAndConversions(string reply, string[] words)
