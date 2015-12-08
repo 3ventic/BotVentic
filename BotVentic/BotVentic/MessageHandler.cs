@@ -41,8 +41,7 @@ namespace BotVentic
                 if (!String.IsNullOrWhiteSpace(reply))
                 {
                     LastHandledMessageOnChannel[e.Message.ChannelId] = e.MessageId;
-                    Message[] x = await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
-                    AddBotReply(x[0], e.Message);
+                    await SendReply(client, e, reply);
                 }
             }
         }
@@ -74,14 +73,33 @@ namespace BotVentic
                     Message botRelation = GetExistingBotReplyOrNull(e.Message.Id);
                     if (botRelation == null)
                     {
-                        Message[] x = await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
-                        AddBotReply(x[0], e.Message);
+                        await SendReply(client, e, reply);
                     }
                     else if (botRelation != null)
                     {
-                        await ((DiscordClient)client).EditMessage(botRelation, text: reply);
+                        try
+                        {
+                            await ((DiscordClient)client).EditMessage(botRelation, text: reply);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.ToString());
+                        }
                     }
                 }
+            }
+        }
+
+        private static async System.Threading.Tasks.Task SendReply(object client, MessageEventArgs e, string reply)
+        {
+            try
+            {
+                Message[] x = await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
+                AddBotReply(x[0], e.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
         }
 
