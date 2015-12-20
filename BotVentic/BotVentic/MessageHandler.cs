@@ -32,7 +32,7 @@ namespace BotVentic
                     else
                         Array.Copy(words, inviteWords, words.Length);
 
-                    if (inviteWords.Length >= 1)
+                    if (inviteWords.Length >= 1 && !inviteWords[0].StartsWith("!"))
                     {
                         try
                         {
@@ -42,7 +42,7 @@ namespace BotVentic
                         catch (Exception ex)
                         {
                             Console.WriteLine(ex.ToString());
-                            await SendReply(client, e, "Failed to join! Please double-check that the invite is valid and has not expired. If the issue persists, open an issue on the repository. !source for link.");
+                            await SendReply(client, e, "Failed to join \"" + inviteWords[0] + "\"! Please double-check that the invite is valid and has not expired. If the issue persists, open an issue on the repository. !source for link.");
                         }
                     }
                 }
