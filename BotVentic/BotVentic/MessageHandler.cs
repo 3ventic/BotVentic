@@ -21,15 +21,29 @@ namespace BotVentic
                 string reply = null;
                 string[] words = e.Message.RawText.Split(' ');
 
-                if (words[0] == "invite" && words.Length >= 2)
+                // Private message, check for invites
+                if (e.ServerId == null)
                 {
-                    try
+                    string[] inviteWords = new string[words.Length];
+
+                    // support legacy "invite [link]" syntax
+                    if (words[0] == "invite")
+                        Array.Copy(words, 1, inviteWords, 0, words.Length - 1);
+                    else
+                        Array.Copy(words, inviteWords, words.Length);
+
+                    if (inviteWords.Length >= 1)
                     {
-                        await ((DiscordClient)client).AcceptInvite(words[1]);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.ToString());
+                        try
+                        {
+                            await ((DiscordClient)client).AcceptInvite(inviteWords[0]);
+                            await SendReply(client, e, "Joined!");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.ToString());
+                            await SendReply(client, e, "Failed to join! Please double-check that the invite is valid and has not expired. If the issue persists, open an issue on the repository. !source for link.");
+                        }
                     }
                 }
 
