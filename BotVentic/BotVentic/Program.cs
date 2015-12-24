@@ -94,11 +94,7 @@ namespace BotVentic
 
             foreach (var em in emotes.Emotes)
             {
-                try
-                {
-                    DictEmotes.Add(em.Code, new string[] { "" + em.Id, "twitch" });
-                }
-                catch { }
+                DictEmotes[em.Code] = new string[] { "" + em.Id, "twitch" };
             }
         }
 
@@ -119,11 +115,7 @@ namespace BotVentic
 
             foreach (var em in emotes.Emotes)
             {
-                try
-                {
-                    DictEmotes.Add(em.Code, new string[] { "" + em.Id, "bttv" });
-                }
-                catch { }
+                DictEmotes[em.Code] = new string[] { "" + em.Id, "bttv" };
             }
         }
 
@@ -147,11 +139,7 @@ namespace BotVentic
                 {
                     foreach (var em in set.Emotes)
                     {
-                        try
-                        {
-                            DictEmotes.Add(em.Code, new string[] { "" + em.Id, "ffz" });
-                        }
-                        catch { }
+                        DictEmotes[em.Code] = new string[] { "" + em.Id, "ffz" };
                     }
                 }
             }
