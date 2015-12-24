@@ -54,7 +54,6 @@ namespace BotVentic
 
                 if (!String.IsNullOrWhiteSpace(reply))
                 {
-                    LastHandledMessageOnChannel[e.Message.ChannelId] = e.MessageId;
                     await SendReply(client, e, reply);
                 }
             }
@@ -108,6 +107,7 @@ namespace BotVentic
         {
             try
             {
+                LastHandledMessageOnChannel[e.Message.ChannelId] = e.MessageId;
                 Message[] x = await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
                 AddBotReply(x[0], e.Message);
             }
