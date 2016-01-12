@@ -2,34 +2,50 @@
 using Discord;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BotVentic
 {
     class Program
     {
         // DictEmotes <EmoteCode, { emote_id, emote_type }>
-        public static Dictionary<string, string[]> DictEmotes { get; private set; }
+        public static ConcurrentDictionary<string, string[]> DictEmotes { get; private set; } = new ConcurrentDictionary<string, string[]>();
         public static string BttvTemplate { get; private set; }
 
-        public static int EditThreshold { get; set; }
-        public static int EditMax { get; set; }
+        public static int EditThreshold
+        {
+            get
+            {
+                return Config.EditThreshold;
+            }
+        }
+        public static int EditMax
+        {
+            get
+            {
+                return Config.EditMax;
+            }
+        }
+
+        private static DiscordClient Client { get; set; }
+        private static Config Config { get; set; }
+
+        private static object _lock = new object();
+        private static bool UpdatingEmotes = false;
 
         static void Main(string[] args)
         {
             Console.WriteLine("Version " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
-            DictEmotes = new Dictionary<string, string[]>();
 
-            Config config;
             if (File.Exists("config.json"))
             {
                 using (StreamReader sr = new StreamReader("config.json"))
                 {
-                    config = JsonConvert.DeserializeObject<Config>(sr.ReadToEnd());
-                    EditThreshold = config.EditThreshold;
-                    EditMax = config.EditMax;
+                    Config = JsonConvert.DeserializeObject<Config>(sr.ReadToEnd());
                 }
             }
             else
@@ -41,21 +57,35 @@ namespace BotVentic
 
             Console.WriteLine("Started!");
 
-            UpdateAllEmotes();
+            Task emoteUpdate = UpdateAllEmotesAsync();
 
             Console.WriteLine("Emotes acquired!");
 
-            var client = new DiscordClient(new DiscordClientConfig());
+            Client = new DiscordClient(new DiscordClientConfig());
 
-            client.MessageCreated += MessageHandler.HandleIncomingMessage;
-            client.MessageUpdated += MessageHandler.HandleEdit;
+            Client.MessageCreated += MessageHandler.HandleIncomingMessage;
+            Client.MessageUpdated += MessageHandler.HandleEdit;
+            Client.Disconnected += HandleDisconnect;
 
-            client.Run(async () =>
+            Connect();
+            emoteUpdate.Wait();
+        }
+
+        private static void HandleDisconnect(object sender, DisconnectedEventArgs e)
+        {
+            Console.WriteLine("Disconnected... Attempting to reconnect in 2 seconds.");
+            Thread.Sleep(2000);
+            Connect();
+        }
+
+        private static void Connect()
+        {
+            Client.Run(async () =>
             {
                 Console.WriteLine("Connecting...");
                 try
                 {
-                    await client.Connect(config.Email, config.Password);
+                    await Client.Connect(Config.Email, Config.Password);
                 }
                 catch (Exception ex)
                 {
@@ -64,27 +94,33 @@ namespace BotVentic
                 }
                 Console.WriteLine("Connected!");
             });
-            Console.WriteLine("Press Any key to quit");
-            Console.ReadKey();
         }
 
         /// <summary>
         /// Update the list of all emoticons
         /// </summary>
-        public static void UpdateAllEmotes()
+        public static async Task UpdateAllEmotesAsync()
         {
+            lock (_lock)
+            {
+                if (UpdatingEmotes)
+                    return;
+                else
+                    UpdatingEmotes = true;
+            }
             DictEmotes.Clear();
-            UpdateFFZEmotes();
-            UpdateBttvEmotes();
-            UpdateEmotes();
+            await UpdateFFZEmotes();
+            await UpdateBttvEmotes();
+            await UpdateTwitchEmotes();
+            UpdatingEmotes = false;
         }
 
         /// <summary>
         /// Update the list of emoticons
         /// </summary>
-        public static void UpdateEmotes()
+        private static async Task UpdateTwitchEmotes()
         {
-            var emotes = JsonConvert.DeserializeObject<EmoticonImages>(Request("https://api.twitch.tv/kraken/chat/emoticon_images"));
+            var emotes = JsonConvert.DeserializeObject<EmoticonImages>(await RequestAsync("https://api.twitch.tv/kraken/chat/emoticon_images"));
 
             if (emotes == null || emotes.Emotes == null)
             {
@@ -101,9 +137,9 @@ namespace BotVentic
         /// <summary>
         /// Update list of betterttv emoticons
         /// </summary>
-        public static void UpdateBttvEmotes()
+        private static async Task UpdateBttvEmotes()
         {
-            var emotes = JsonConvert.DeserializeObject<BttvEmoticonImages>(Request("https://api.betterttv.net/2/emotes"));
+            var emotes = JsonConvert.DeserializeObject<BttvEmoticonImages>(await RequestAsync("https://api.betterttv.net/2/emotes"));
 
             if (emotes == null || emotes.Template == null || emotes.Emotes == null)
             {
@@ -123,9 +159,9 @@ namespace BotVentic
         /// <summary>
         /// Update the list of FrankerFaceZ emoticons
         /// </summary>
-        public static void UpdateFFZEmotes()
+        private static async Task UpdateFFZEmotes()
         {
-            var emotes = JsonConvert.DeserializeObject<FFZEmoticonSets>(Request("http://api.frankerfacez.com/v1/set/global"));
+            var emotes = JsonConvert.DeserializeObject<FFZEmoticonSets>(await RequestAsync("http://api.frankerfacez.com/v1/set/global"));
 
             if (emotes == null || emotes.Sets == null || emotes.Sets.Values == null)
             {
@@ -151,18 +187,18 @@ namespace BotVentic
         /// </summary>
         /// <param name="uri">URL to request</param>
         /// <returns>Response body</returns>
-        public static string Request(string uri)
+        public static async Task<string> RequestAsync(string uri)
         {
             WebRequest request = WebRequest.Create(uri);
             // 30 seconds max, mainly because of emotes
             request.Timeout = 15000;
 
             // Change our user agent string to something more informative
-            ((HttpWebRequest)request).UserAgent = "BotVentic/1.0";
+            ((HttpWebRequest) request).UserAgent = "BotVentic/1.0";
             try
             {
                 string data;
-                using (WebResponse response = request.GetResponse())
+                using (WebResponse response = await request.GetResponseAsync())
                 {
                     using (System.IO.Stream stream = response.GetResponseStream())
                     {

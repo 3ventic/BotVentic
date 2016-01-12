@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BotVentic
 {
@@ -47,7 +48,7 @@ namespace BotVentic
                     }
                 }
 
-                reply = HandleCommands(reply, words);
+                reply = await HandleCommands(reply, words);
 
                 if (reply == null)
                     reply = HandleEmotesAndConversions(reply, words);
@@ -74,7 +75,7 @@ namespace BotVentic
                 string reply = null;
                 string[] words = e.Message.RawText.Split(' ');
 
-                reply = HandleCommands(reply, words);
+                reply = await HandleCommands(reply, words);
 
                 if (reply == null)
                 {
@@ -212,7 +213,7 @@ namespace BotVentic
             return reply;
         }
 
-        private static string HandleCommands(string reply, string[] words)
+        private static async Task<string> HandleCommands(string reply, string[] words)
         {
             if (words == null || words.Length < 0)
                 return "An error occurred.";
@@ -222,7 +223,7 @@ namespace BotVentic
                 case "!stream":
                     if (words.Length > 1)
                     {
-                        string json = Program.Request("https://api.twitch.tv/kraken/streams/" + words[1].ToLower() + "?stream_type=all");
+                        string json = await Program.RequestAsync("https://api.twitch.tv/kraken/streams/" + words[1].ToLower() + "?stream_type=all");
                         if (json != null)
                         {
                             var streams = JsonConvert.DeserializeObject<Json.Streams>(json);
@@ -253,7 +254,7 @@ namespace BotVentic
                 case "!channel":
                     if (words.Length > 1)
                     {
-                        string json = Program.Request("https://api.twitch.tv/kraken/channels/" + words[1].ToLower());
+                        string json = await Program.RequestAsync("https://api.twitch.tv/kraken/channels/" + words[1].ToLower());
                         if (json != null)
                         {
                             var channel = JsonConvert.DeserializeObject<Json.Channel>(json);
@@ -289,7 +290,7 @@ namespace BotVentic
                         switch (words[1])
                         {
                             case "emotes":
-                                Program.UpdateAllEmotes();
+                                await Program.UpdateAllEmotesAsync();
                                 reply = "*updated list of known emotes*";
                                 break;
                         }
