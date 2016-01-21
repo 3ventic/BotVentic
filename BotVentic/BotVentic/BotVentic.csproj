@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EmoteInfo.cs" />
     <Compile Include="Json\Config.cs" />
     <Compile Include="Json\EmoticonImages.cs" />
     <Compile Include="Json\Streams.cs" />

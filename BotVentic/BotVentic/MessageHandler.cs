@@ -175,7 +175,7 @@ namespace BotVentic
         {
             Func<string, string, bool> emoteComparer = (first, second) => { return caseSensitive ? (first == second) : (first.ToLower() == second.ToLower()); };
             bool found = false;
-            string[] emote_info;
+            EmoteInfo emote_info;
 
             if (Program.DictEmotes.TryGetValue(code, out emote_info))
             {
@@ -197,17 +197,17 @@ namespace BotVentic
             return found;
         }
 
-        private static string GetEmoteUrl(string[] emote_info)
+        private static string GetEmoteUrl(EmoteInfo emote_info)
         {
             string reply = "";
-            switch (emote_info[1])
+            switch (emote_info.Type)
             {
-                case "twitch":
-                    reply = "http://emote.3v.fi/2.0/" + emote_info[0] + ".png"; break;
-                case "bttv":
-                    reply = "https:" + Program.BttvTemplate.Replace("{{id}}", emote_info[0]).Replace("{{image}}", "2x"); break;
-                case "ffz":
-                    reply = "http://cdn.frankerfacez.com/emoticon/" + emote_info[0] + "/2"; break;
+                case EmoteType.Twitch:
+                    reply = "http://emote.3v.fi/2.0/" + emote_info.Id + ".png"; break;
+                case EmoteType.Bttv:
+                    reply = "https:" + Program.BttvTemplate.Replace("{{id}}", emote_info.Id).Replace("{{image}}", "2x"); break;
+                case EmoteType.Ffz:
+                    reply = "http://cdn.frankerfacez.com/emoticon/" + emote_info.Id + "/2"; break;
             }
 
             return reply;

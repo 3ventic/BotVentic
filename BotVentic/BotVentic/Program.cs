@@ -13,7 +13,7 @@ namespace BotVentic
     class Program
     {
         // DictEmotes <EmoteCode, { emote_id, emote_type }>
-        public static ConcurrentDictionary<string, string[]> DictEmotes { get; private set; } = new ConcurrentDictionary<string, string[]>();
+        public static ConcurrentDictionary<string, EmoteInfo> DictEmotes { get; private set; } = new ConcurrentDictionary<string, EmoteInfo>();
         public static string BttvTemplate { get; private set; }
 
         public static int EditThreshold
@@ -152,7 +152,7 @@ namespace BotVentic
 
             foreach (var em in emotes.Emotes)
             {
-                DictEmotes[em.Code] = new string[] { "" + em.Id, "twitch" };
+                DictEmotes[em.Code] = new EmoteInfo(em.Id, EmoteType.Twitch);
             }
         }
 
@@ -173,7 +173,7 @@ namespace BotVentic
 
             foreach (var em in emotes.Emotes)
             {
-                DictEmotes[em.Code] = new string[] { "" + em.Id, "bttv" };
+                DictEmotes[em.Code] = new EmoteInfo(em.Id, EmoteType.Bttv);
             }
         }
 
@@ -197,7 +197,7 @@ namespace BotVentic
                 {
                     foreach (var em in set.Emotes)
                     {
-                        DictEmotes[em.Code] = new string[] { "" + em.Id, "ffz" };
+                        DictEmotes[em.Code] = new EmoteInfo(em.Id, EmoteType.Ffz);
                     }
                 }
             }
