@@ -10,6 +10,9 @@ namespace BotVentic.Json
 
         [JsonProperty("code")]
         public string Code { get; set; }
+
+        [JsonProperty("emoticon_set")]
+        public int? Set { get; set; }
     }
 
     class EmoticonImages

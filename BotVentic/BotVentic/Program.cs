@@ -128,6 +128,28 @@ namespace BotVentic
                 return;
             }
 
+            emotes.Emotes.Sort((a, b) =>
+            {
+                int aSet = 0;
+                int bSet = 0;
+
+                if (a != null && a.Set != null)
+                    aSet = a.Set ?? 0;
+                if (b != null && b.Set != null)
+                    bSet = b.Set ?? 0;
+
+                if (aSet == bSet)
+                    return 0;
+
+                if (aSet == 0)
+                    return 1;
+
+                if (bSet == 0)
+                    return -1;
+
+                return aSet - bSet;
+            });
+
             foreach (var em in emotes.Emotes)
             {
                 DictEmotes[em.Code] = new string[] { "" + em.Id, "twitch" };
