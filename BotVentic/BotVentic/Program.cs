@@ -67,7 +67,7 @@ namespace BotVentic
             Client.MessageUpdated += MessageHandler.HandleEdit;
             Client.Disconnected += HandleDisconnect;
 
-            Connect();
+            ConnectLoop();
             emoteUpdate.Wait();
         }
 
@@ -75,25 +75,37 @@ namespace BotVentic
         {
             Console.WriteLine("Disconnected... Attempting to reconnect in 2 seconds.");
             Thread.Sleep(2000);
-            Connect();
+            ConnectLoop();
         }
 
-        private static void Connect()
+        private static void ConnectLoop()
         {
-            Client.Run(async () =>
+            while (!Connect())
             {
-                Console.WriteLine("Connecting...");
-                try
-                {
-                    await Client.Connect(Config.Email, Config.Password);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                    return;
-                }
-                Console.WriteLine("Connected!");
-            });
+                Thread.Sleep(1000);
+            }
+        }
+
+        private static bool Connect()
+        {
+            Console.WriteLine("Connecting...");
+            try
+            {
+                Client.Run(async () => { await Client.Connect(Config.Email, Config.Password); });
+            }
+            catch (Discord.TimeoutException)
+            {
+                Console.WriteLine("Connection attempt timed out. Reconnecting...");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                Console.WriteLine("Reconnecting...");
+                return false;
+            }
+            Console.WriteLine("Connected!");
+            return true;
         }
 
         /// <summary>
