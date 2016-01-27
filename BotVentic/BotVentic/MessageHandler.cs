@@ -29,7 +29,16 @@ namespace BotVentic
 
                     // support legacy "invite [link]" syntax
                     if (words[0] == "invite")
-                        Array.Copy(words, 1, inviteWords, 0, words.Length - 1);
+                    {
+                        if (words.Length >= 2)
+                        {
+                            Array.Copy(words, 1, inviteWords, 0, words.Length - 1);
+                        }
+                        else
+                        {
+                            await SendReply(client, e, "Missing invite link");
+                        }
+                    }
                     else
                         Array.Copy(words, inviteWords, words.Length);
 
