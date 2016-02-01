@@ -51,7 +51,7 @@ namespace BotVentic
             else
             {
                 Console.WriteLine("No config file present!");
-                System.Threading.Thread.Sleep(4000);
+                Thread.Sleep(4000);
                 return;
             }
 
@@ -59,26 +59,22 @@ namespace BotVentic
 
             Task emoteUpdate = UpdateAllEmotesAsync();
 
-            Console.WriteLine("Emotes acquired!");
-
             Client = new DiscordClient(new DiscordClientConfig());
 
             Client.MessageCreated += MessageHandler.HandleIncomingMessage;
             Client.MessageUpdated += MessageHandler.HandleEdit;
             Client.Disconnected += HandleDisconnect;
 
-            ConnectLoop();
+            KeepConnectionAlive();
             emoteUpdate.Wait();
         }
 
         private static void HandleDisconnect(object sender, DisconnectedEventArgs e)
         {
-            Console.WriteLine("Disconnected... Attempting to reconnect in 2 seconds.");
-            Thread.Sleep(2000);
-            ConnectLoop();
+            Console.WriteLine("Disconnected.");
         }
 
-        private static void ConnectLoop()
+        private static void KeepConnectionAlive()
         {
             while (!Connect())
             {
@@ -96,16 +92,13 @@ namespace BotVentic
             catch (Discord.TimeoutException)
             {
                 Console.WriteLine("Connection attempt timed out. Reconnecting...");
-                return false;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
                 Console.WriteLine("Reconnecting...");
-                return false;
             }
-            Console.WriteLine("Connected!");
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -120,11 +113,18 @@ namespace BotVentic
                 else
                     UpdatingEmotes = true;
             }
+            Console.WriteLine("Loading emotes!");
+
+            if (DictEmotes == null)
+                DictEmotes = new ConcurrentDictionary<string, EmoteInfo>();
+
             DictEmotes.Clear();
             await UpdateFFZEmotes();
             await UpdateBttvEmotes();
             await UpdateTwitchEmotes();
             UpdatingEmotes = false;
+
+            Console.WriteLine("Emotes acquired!");
         }
 
         /// <summary>
