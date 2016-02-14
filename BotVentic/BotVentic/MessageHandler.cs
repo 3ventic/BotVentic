@@ -46,7 +46,7 @@ namespace BotVentic
                     {
                         try
                         {
-                            await ((DiscordClient)client).AcceptInvite(inviteWords[0]);
+                            await ((DiscordClient) client).AcceptInvite(inviteWords[0]);
                             await SendReply(client, e, "Joined!");
                         }
                         catch (Exception ex)
@@ -72,7 +72,7 @@ namespace BotVentic
         public static async void HandleEdit(object client, MessageEventArgs e)
         {
             // Don't handle own message or any message containing embeds that was *just* replied to
-            if (e != null && e.Message != null && !e.Message.IsAuthor && (e.Message.Embeds.Length == 0 || !IsMessageLastRepliedTo(e)))
+            if (e != null && e.Message != null && !e.Message.IsAuthor && ((e.Message.Embeds != null && e.Message.Embeds.Length == 0) || !IsMessageLastRepliedTo(e)))
             {
                 if (LastHandledMessageOnChannel.ContainsKey(e.Message.ChannelId))
                     LastHandledMessageOnChannel.Remove(e.Message.ChannelId);
@@ -102,7 +102,7 @@ namespace BotVentic
                     {
                         try
                         {
-                            await ((DiscordClient)client).EditMessage(botRelation, text: reply);
+                            await ((DiscordClient) client).EditMessage(botRelation, text: reply);
                         }
                         catch (Exception ex)
                         {
@@ -118,7 +118,7 @@ namespace BotVentic
             try
             {
                 LastHandledMessageOnChannel[e.Message.ChannelId] = e.MessageId;
-                Message[] x = await ((DiscordClient)client).SendMessage(e.Message.ChannelId, reply);
+                Message[] x = await ((DiscordClient) client).SendMessage(e.Message.ChannelId, reply);
                 AddBotReply(x[0], e.Message);
             }
             catch (Exception ex)
@@ -199,7 +199,6 @@ namespace BotVentic
                     {
                         reply = GetEmoteUrl(Program.DictEmotes[emote]);
                         found = true;
-                        break;
                     }
                 }
             }
@@ -212,11 +211,14 @@ namespace BotVentic
             switch (emote_info.Type)
             {
                 case EmoteType.Twitch:
-                    reply = "http://emote.3v.fi/2.0/" + emote_info.Id + ".png"; break;
+                    reply = "http://emote.3v.fi/2.0/" + emote_info.Id + ".png";
+                    break;
                 case EmoteType.Bttv:
-                    reply = "https:" + Program.BttvTemplate.Replace("{{id}}", emote_info.Id).Replace("{{image}}", "2x"); break;
+                    reply = "https:" + Program.BttvTemplate.Replace("{{id}}", emote_info.Id).Replace("{{image}}", "2x");
+                    break;
                 case EmoteType.Ffz:
-                    reply = "http://cdn.frankerfacez.com/emoticon/" + emote_info.Id + "/2"; break;
+                    reply = "http://cdn.frankerfacez.com/emoticon/" + emote_info.Id + "/2";
+                    break;
             }
 
             return reply;

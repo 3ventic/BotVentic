@@ -12,6 +12,15 @@ namespace BotVentic
 {
     class Program
     {
+        private enum ConnectionState
+        {
+            Connecting,
+            Connected,
+            Disconnected
+        }
+
+        private static ConnectionState State = ConnectionState.Disconnected;
+
         // DictEmotes <EmoteCode, { emote_id, emote_type }>
         public static ConcurrentDictionary<string, EmoteInfo> DictEmotes { get; private set; } = new ConcurrentDictionary<string, EmoteInfo>();
         public static string BttvTemplate { get; private set; }
@@ -59,12 +68,6 @@ namespace BotVentic
 
             Task emoteUpdate = UpdateAllEmotesAsync();
 
-            Client = new DiscordClient(new DiscordClientConfig());
-
-            Client.MessageCreated += MessageHandler.HandleIncomingMessage;
-            Client.MessageUpdated += MessageHandler.HandleEdit;
-            Client.Disconnected += HandleDisconnect;
-
             KeepConnectionAlive();
             emoteUpdate.Wait();
         }
@@ -72,33 +75,47 @@ namespace BotVentic
         private static void HandleDisconnect(object sender, DisconnectedEventArgs e)
         {
             Console.WriteLine("Disconnected.");
+            State = ConnectionState.Disconnected;
         }
 
         private static void KeepConnectionAlive()
         {
-            while (!Connect())
+            while (true)
             {
-                Thread.Sleep(1000);
+                Connect();
+                while (State != ConnectionState.Disconnected)
+                    Thread.Sleep(1000);
             }
         }
 
-        private static bool Connect()
+        private static async void Connect()
         {
+            State = ConnectionState.Connecting;
+
+            Client = new DiscordClient(new DiscordClientConfig());
+
+            Client.MessageCreated += MessageHandler.HandleIncomingMessage;
+            Client.MessageUpdated += MessageHandler.HandleEdit;
+            Client.Disconnected += HandleDisconnect;
+
             Console.WriteLine("Connecting...");
             try
             {
-                Client.Run(async () => { await Client.Connect(Config.Email, Config.Password); });
+                await Client.Connect(Config.Email, Config.Password);
+                State = ConnectionState.Connected;
+                Console.WriteLine("Connected!");
             }
             catch (Discord.TimeoutException)
             {
                 Console.WriteLine("Connection attempt timed out. Reconnecting...");
+                State = ConnectionState.Disconnected;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
                 Console.WriteLine("Reconnecting...");
+                State = ConnectionState.Disconnected;
             }
-            return false;
         }
 
         /// <summary>
