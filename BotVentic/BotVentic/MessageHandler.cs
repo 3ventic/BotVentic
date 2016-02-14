@@ -18,9 +18,10 @@ namespace BotVentic
             {
                 string server = e.Message.Server == null ? "1-1" : e.Message.Server.Name;
                 string user = e.Message.User == null ? "?" : e.Message.User.Name;
-                Console.WriteLine("[{0}][Message] {1}: {2}", server, user, e.Message.RawText);
+                string rawtext = e.Message.RawText ?? "";
+                Console.WriteLine("[{0}][Message] {1}: {2}", server, user, rawtext);
                 string reply = null;
-                string[] words = e.Message.RawText.Split(' ');
+                string[] words = rawtext.Split(' ');
 
                 // Private message, check for invites
                 if (e.ServerId == null)
@@ -80,9 +81,10 @@ namespace BotVentic
                 bool calcDate = (DateTime.Now - e.Message.Timestamp).Minutes < Program.EditThreshold;
                 string server = e.Message.Server == null ? "1-1" : e.Message.Server.Name;
                 string user = e.Message.User == null ? "?" : e.Message.User.Name;
-                Console.WriteLine(String.Format("[{0}][Edit] {1}: {2}", server, user, e.Message.RawText));
+                string rawtext = e.Message.RawText ?? "";
+                Console.WriteLine(String.Format("[{0}][Edit] {1}: {2}", server, user, rawtext));
                 string reply = null;
-                string[] words = e.Message.RawText.Split(' ');
+                string[] words = rawtext.Split(' ');
 
                 reply = await HandleCommands(reply, words);
 
