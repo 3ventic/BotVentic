@@ -7,6 +7,7 @@ using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using TwitchbotCommons;
 
 namespace BotVentic
 {
@@ -22,7 +23,7 @@ namespace BotVentic
         private static ConnectionState State = ConnectionState.Disconnected;
 
         // DictEmotes <EmoteCode, { emote_id, emote_type }>
-        public static ConcurrentDictionary<string, EmoteInfo> DictEmotes { get; private set; } = new ConcurrentDictionary<string, EmoteInfo>();
+        public static ThreadSafeList<EmoteInfo> DictEmotes { get; private set; } = new ThreadSafeList<EmoteInfo>();
         public static string BttvTemplate { get; private set; }
 
         public static int EditThreshold
@@ -133,7 +134,7 @@ namespace BotVentic
             Console.WriteLine("Loading emotes!");
 
             if (DictEmotes == null)
-                DictEmotes = new ConcurrentDictionary<string, EmoteInfo>();
+                DictEmotes = new ThreadSafeList<EmoteInfo>();
 
             DictEmotes.Clear();
             await UpdateFFZEmotes();
@@ -181,7 +182,7 @@ namespace BotVentic
 
             foreach (var em in emotes.Emotes)
             {
-                DictEmotes[em.Code] = new EmoteInfo(em.Id, EmoteType.Twitch);
+                DictEmotes.Add(new EmoteInfo(em.Id, em.Code, EmoteType.Twitch, em.Set ?? 0));
             }
         }
 
@@ -202,7 +203,7 @@ namespace BotVentic
 
             foreach (var em in emotes.Emotes)
             {
-                DictEmotes[em.Code] = new EmoteInfo(em.Id, EmoteType.Bttv);
+                DictEmotes.Add(new EmoteInfo(em.Id, em.Code, EmoteType.Bttv));
             }
         }
 
@@ -226,7 +227,7 @@ namespace BotVentic
                 {
                     foreach (var em in set.Emotes)
                     {
-                        DictEmotes[em.Code] = new EmoteInfo(em.Id, EmoteType.Ffz);
+                        DictEmotes.Add(new EmoteInfo(em.Id, em.Code, EmoteType.Ffz));
                     }
                 }
             }

@@ -186,21 +186,44 @@ namespace BotVentic
         {
             Func<string, string, bool> emoteComparer = (first, second) => { return caseSensitive ? (first == second) : (first.ToLower() == second.ToLower()); };
             bool found = false;
-            EmoteInfo emote_info;
+            int emoteset = -1;
 
-            if (Program.DictEmotes.TryGetValue(code, out emote_info))
+            foreach (var emote in Program.DictEmotes)
             {
-                found = true;
-                reply = GetEmoteUrl(emote_info);
-            }
-            else
-            {
-                foreach (var emote in Program.DictEmotes.Keys)
+                if (emote.Code == code)
                 {
-                    if (emoteComparer(code, emote))
+                    if (emote.EmoteSet == 0)
                     {
-                        reply = GetEmoteUrl(Program.DictEmotes[emote]);
+                        reply = GetEmoteUrl(emote);
                         found = true;
+                        break;
+                    }
+                    else if (emote.EmoteSet > emoteset)
+                    {
+                        reply = GetEmoteUrl(emote);
+                        found = true;
+                        emoteset = emote.EmoteSet;
+                    }
+                }
+            }
+            if (!found)
+            {
+                foreach (var emote in Program.DictEmotes)
+                {
+                    if (emoteComparer(code, emote.Code))
+                    {
+                        if (emote.EmoteSet == 0)
+                        {
+                            reply = GetEmoteUrl(emote);
+                            found = true;
+                            break;
+                        }
+                        else if (emote.EmoteSet > emoteset)
+                        {
+                            reply = GetEmoteUrl(emote);
+                            found = true;
+                            emoteset = emote.EmoteSet;
+                        }
                     }
                 }
             }
