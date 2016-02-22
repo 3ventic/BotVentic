@@ -186,9 +186,9 @@ namespace BotVentic
         {
             Func<string, string, bool> emoteComparer = (first, second) => { return caseSensitive ? (first == second) : (first.ToLower() == second.ToLower()); };
             bool found = false;
-            int emoteset = -1;
+            int emoteset = -2;
 
-            foreach (var emote in Program.DictEmotes)
+            foreach (var emote in Program.Emotes)
             {
                 if (emote.Code == code)
                 {
@@ -208,7 +208,7 @@ namespace BotVentic
             }
             if (!found)
             {
-                foreach (var emote in Program.DictEmotes)
+                foreach (var emote in Program.Emotes)
                 {
                     if (emoteComparer(code, emote.Code))
                     {
