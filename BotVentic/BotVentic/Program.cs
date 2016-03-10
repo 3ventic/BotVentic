@@ -83,13 +83,14 @@ namespace BotVentic
         {
             while (true)
             {
-                Connect();
+                ConnectAsync();
                 while (State != ConnectionState.Disconnected)
                     Thread.Sleep(1000);
+                Thread.Sleep(5000);
             }
         }
 
-        private static async void Connect()
+        private static async void ConnectAsync()
         {
             State = ConnectionState.Connecting;
 
