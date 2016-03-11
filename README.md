@@ -16,3 +16,5 @@ Either message the bot with "invite [Discord invite here]" or follow the instruc
 - Build the project
 - Copy config.sample.json to the folder with the exe
 - Edit config.json to include your bot account information
+
+Requires [TwitchbotCommons.dll](https://i.3v.fi/TwitchbotCommons.dll) from ohbot at the moment.
