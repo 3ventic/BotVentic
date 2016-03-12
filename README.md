@@ -2,6 +2,10 @@
 
 Twitch-focused Discord bot
 
+## Development status
+
+Maintenance only. I will fix it if it breaks, but no updates beyond that. Pull requests for new features are still welcome.
+
 ## Features
 
 - All Twitch emotes, global BTTV/FFZ emotes.
