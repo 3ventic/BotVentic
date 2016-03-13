@@ -1,15 +1,15 @@
 ﻿using Discord;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace BotVentic
 {
     class MessageHandler
     {
-        private static Dictionary<Message, Message> BotReplies = new Dictionary<Message, Message>();
+        private static ConcurrentQueue<Message[]> BotReplies = new ConcurrentQueue<Message[]>();
         private static Dictionary<string, string> LastHandledMessageOnChannel = new Dictionary<string, string>();
 
         public static async void HandleIncomingMessage(object client, MessageEventArgs e)
@@ -339,20 +339,27 @@ namespace BotVentic
 
         private static void AddBotReply(Message bot, Message user)
         {
-            if (BotReplies.Count > Program.EditMax)
+            while (BotReplies.Count > Program.EditMax)
             {
-                BotReplies.Remove(BotReplies.Keys.ElementAt(0));
+                Message[] dummy;
+                BotReplies.TryDequeue(out dummy);
             }
-            BotReplies.Add(bot, user);
+            BotReplies.Enqueue(new Message[] { bot, user });
+        }
+
+        private enum MessageIndex
+        {
+            BotReply,
+            UserMessage
         }
 
         private static Message GetExistingBotReplyOrNull(string id)
         {
-            foreach (KeyValuePair<Message, Message> item in BotReplies)
+            foreach (var item in BotReplies)
             {
-                if (item.Value.Id == id)
+                if (item[(int) MessageIndex.UserMessage].Id == id)
                 {
-                    return item.Key;
+                    return item[(int) MessageIndex.BotReply];
                 }
             }
             return null;
