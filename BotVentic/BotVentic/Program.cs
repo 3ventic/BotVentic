@@ -73,12 +73,6 @@ namespace BotVentic
             emoteUpdate.Wait();
         }
 
-        private static void HandleDisconnect(object sender, DisconnectedEventArgs e)
-        {
-            Console.WriteLine("Disconnected.");
-            State = ConnectionState.Disconnected;
-        }
-
         private static void KeepConnectionAlive()
         {
             while (true)
@@ -94,29 +88,25 @@ namespace BotVentic
         {
             State = ConnectionState.Connecting;
 
-            Client = new DiscordClient(new DiscordClientConfig());
+            Client = new DiscordClient();
 
-            Client.MessageCreated += MessageHandler.HandleIncomingMessage;
+            Client.MessageReceived += MessageHandler.HandleIncomingMessage;
             Client.MessageUpdated += MessageHandler.HandleEdit;
-            Client.Disconnected += HandleDisconnect;
 
             Console.WriteLine("Connecting...");
             try
             {
                 await Client.Connect(Config.Email, Config.Password);
+                Client.SetGame("on github.com/3ventic/BotVentic");
                 State = ConnectionState.Connected;
                 Console.WriteLine("Connected!");
-            }
-            catch (Discord.TimeoutException)
-            {
-                Console.WriteLine("Connection attempt timed out. Reconnecting...");
-                State = ConnectionState.Disconnected;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
                 Console.WriteLine("Reconnecting...");
                 State = ConnectionState.Disconnected;
+                Client.Dispose();
             }
         }
 
