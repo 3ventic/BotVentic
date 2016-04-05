@@ -67,9 +67,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="TwitchbotCommons">
-      <HintPath>..\..\..\..\ohbot15\ohbot\TwitchbotCommons\bin\Release\TwitchbotCommons.dll</HintPath>
-    </Reference>
     <Reference Include="websocket-sharp, Version=1.0.2.36589, Culture=neutral, PublicKeyToken=5660b08a1845a91e, processorArchitecture=MSIL">
       <HintPath>..\packages\WebSocketSharp.1.0.3-rc9\lib\websocket-sharp.dll</HintPath>
       <Private>True</Private>

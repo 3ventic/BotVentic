@@ -2,12 +2,11 @@
 using Discord;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using TwitchbotCommons;
 
 namespace BotVentic
 {
@@ -23,7 +22,7 @@ namespace BotVentic
         private static ConnectionState State = ConnectionState.Disconnected;
 
         // DictEmotes <EmoteCode, { emote_id, emote_type }>
-        public static ThreadSafeList<EmoteInfo> Emotes { get; private set; } = new ThreadSafeList<EmoteInfo>();
+        public static List<EmoteInfo> Emotes { get; private set; } = new List<EmoteInfo>();
         public static string BttvTemplate { get; private set; }
 
         public static int EditThreshold
@@ -125,12 +124,13 @@ namespace BotVentic
             Console.WriteLine("Loading emotes!");
 
             if (Emotes == null)
-                Emotes = new ThreadSafeList<EmoteInfo>();
+                Emotes = new List<EmoteInfo>();
 
-            Emotes.Clear();
-            await UpdateFFZEmotes();
-            await UpdateBttvEmotes();
-            await UpdateTwitchEmotes();
+            List<EmoteInfo> emotes = new List<EmoteInfo>();
+            await UpdateFFZEmotes(emotes);
+            await UpdateBttvEmotes(emotes);
+            await UpdateTwitchEmotes(emotes);
+            Emotes = emotes;
             UpdatingEmotes = false;
 
             Console.WriteLine("Emotes acquired!");
@@ -139,7 +139,7 @@ namespace BotVentic
         /// <summary>
         /// Update the list of emoticons
         /// </summary>
-        private static async Task UpdateTwitchEmotes()
+        private static async Task UpdateTwitchEmotes(List<EmoteInfo> e)
         {
             var emotes = JsonConvert.DeserializeObject<EmoticonImages>(await RequestAsync("https://api.twitch.tv/kraken/chat/emoticon_images"));
 
@@ -173,14 +173,14 @@ namespace BotVentic
 
             foreach (var em in emotes.Emotes)
             {
-                Emotes.Add(new EmoteInfo(em.Id, em.Code, EmoteType.Twitch, em.Set ?? 0));
+                e.Add(new EmoteInfo(em.Id, em.Code, EmoteType.Twitch, em.Set ?? 0));
             }
         }
 
         /// <summary>
         /// Update list of betterttv emoticons
         /// </summary>
-        private static async Task UpdateBttvEmotes()
+        private static async Task UpdateBttvEmotes(List<EmoteInfo> e)
         {
             var emotes = JsonConvert.DeserializeObject<BttvEmoticonImages>(await RequestAsync("https://api.betterttv.net/2/emotes"));
 
@@ -194,7 +194,7 @@ namespace BotVentic
 
             foreach (var em in emotes.Emotes)
             {
-                Emotes.Add(new EmoteInfo(em.Id, em.Code, EmoteType.Bttv));
+                e.Add(new EmoteInfo(em.Id, em.Code, EmoteType.Bttv));
             }
         }
 
@@ -202,7 +202,7 @@ namespace BotVentic
         /// <summary>
         /// Update the list of FrankerFaceZ emoticons
         /// </summary>
-        private static async Task UpdateFFZEmotes()
+        private static async Task UpdateFFZEmotes(List<EmoteInfo> e)
         {
             var emotes = JsonConvert.DeserializeObject<FFZEmoticonSets>(await RequestAsync("http://api.frankerfacez.com/v1/set/global"));
 
@@ -218,7 +218,7 @@ namespace BotVentic
                 {
                     foreach (var em in set.Emotes)
                     {
-                        Emotes.Add(new EmoteInfo(em.Id, em.Code, EmoteType.Ffz));
+                        e.Add(new EmoteInfo(em.Id, em.Code, EmoteType.Ffz));
                     }
                 }
             }
