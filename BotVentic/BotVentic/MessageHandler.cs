@@ -26,36 +26,43 @@ namespace BotVentic
                 // Private message, check for invites
                 if (e.Server == null)
                 {
-                    string[] inviteWords = new string[words.Length];
-
-                    // support legacy "invite [link]" syntax
-                    if (words[0] == "invite")
+                    try
                     {
-                        if (words.Length >= 2)
+                        string[] inviteWords = new string[words.Length];
+
+                        // support legacy "invite [link]" syntax
+                        if (words[0] == "invite")
                         {
-                            Array.Copy(words, 1, inviteWords, 0, words.Length - 1);
+                            if (words.Length >= 2)
+                            {
+                                Array.Copy(words, 1, inviteWords, 0, words.Length - 1);
+                            }
+                            else
+                            {
+                                await SendReply(client, e.Message, e.Message.Channel.Id, e.Message.Id, "Missing invite link");
+                            }
                         }
                         else
+                            Array.Copy(words, inviteWords, words.Length);
+
+                        if (inviteWords.Length >= 1 && !inviteWords[0].StartsWith("!"))
                         {
-                            await SendReply(client, e.Message, e.Message.Channel.Id, e.Message.Id, "Missing invite link");
+                            try
+                            {
+                                var invite = await ((DiscordClient) client).GetInvite(inviteWords[0]);
+                                await invite.Accept();
+                                await SendReply(client, e.Message, e.Message.Channel.Id, e.Message.Id, "Joined!");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.ToString());
+                                await SendReply(client, e.Message, e.Message.Channel.Id, e.Message.Id, "Failed to join \"" + inviteWords[0] + "\"! Please double-check that the invite is valid and has not expired. If the issue persists, open an issue on the repository. !source for link.");
+                            }
                         }
                     }
-                    else
-                        Array.Copy(words, inviteWords, words.Length);
-
-                    if (inviteWords.Length >= 1 && !inviteWords[0].StartsWith("!"))
+                    catch (NullReferenceException ex)
                     {
-                        try
-                        {
-                            var invite = await ((DiscordClient) client).GetInvite(inviteWords[0]);
-                            await invite.Accept();
-                            await SendReply(client, e.Message, e.Message.Channel.Id, e.Message.Id, "Joined!");
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.ToString());
-                            await SendReply(client, e.Message, e.Message.Channel.Id, e.Message.Id, "Failed to join \"" + inviteWords[0] + "\"! Please double-check that the invite is valid and has not expired. If the issue persists, open an issue on the repository. !source for link.");
-                        }
+                        Console.WriteLine(ex.ToString());
                     }
                 }
 
