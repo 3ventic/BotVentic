@@ -60,7 +60,7 @@ namespace BotVentic
             }
             else
             {
-                Console.WriteLine("No config file present!");
+                Console.WriteLine("No config file present! Please create a file called config.json in the program's working directory. See config.sample.json for a base.");
                 Thread.Sleep(4000);
                 return;
             }
