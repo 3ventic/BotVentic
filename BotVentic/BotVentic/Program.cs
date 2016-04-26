@@ -42,6 +42,7 @@ namespace BotVentic
 
         private static DiscordClient Client { get; set; }
         private static Config Config { get; set; }
+        public static string AuthUrl { get; private set; }
 
         private static object _lock = new object();
         private static bool UpdatingEmotes = false;
@@ -63,6 +64,8 @@ namespace BotVentic
                 Thread.Sleep(4000);
                 return;
             }
+
+            AuthUrl = Config.AuthUrl;
 
             Console.WriteLine("Started!");
 
