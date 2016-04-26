@@ -1,6 +1,5 @@
 ﻿{
-  "email": "",
-  "password": "",
+  "token": "",
   "editthreshold": 1,
   "editmax":  10
 }

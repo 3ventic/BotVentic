@@ -95,7 +95,7 @@ namespace BotVentic
             Console.WriteLine("Connecting...");
             try
             {
-                await Client.Connect(Config.Email, Config.Password);
+                await Client.Connect(Config.Token);
                 Client.SetGame("on github.com/3ventic/BotVentic");
                 State = ConnectionState.Connected;
                 Console.WriteLine("Connected!");

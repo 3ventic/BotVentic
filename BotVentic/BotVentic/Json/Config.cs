@@ -4,11 +4,8 @@ namespace BotVentic.Json
 {
     class Config
     {
-        [JsonProperty("email")]
-        public string Email { get; set; }
-
-        [JsonProperty("password")]
-        public string Password { get; set; }
+        [JsonProperty("token")]
+        public string Token { get; set; }
 
         [JsonProperty("editthreshold")]
         public int EditThreshold { get; set; } = 1;
