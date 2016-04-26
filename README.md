@@ -14,11 +14,8 @@ Maintenance only. I will fix it if it breaks, but no updates beyond that. Pull r
 
 ## Getting Started
 
-Either message the bot with "invite [Discord invite here]" or follow the instructions below to use your own account. To message the bot, you can [join the BotVentic Discord server](https://discord.gg/0gY7rLJr9tHxogD9).
+Either [click here to invite the bot](https://3v.fi/l/botventic) or send the bot a private message. To message the bot, you can [join the BotVentic Discord server](https://discord.gg/0gY7rLJr9tHxogD9).
 
-- Clone & open solution in Visual Studio 2015
-- Build the project
-- Copy config.sample.json to the folder with the exe
-- Edit config.json to include your bot account information
+## Running your own copy
 
-Requires [TwitchbotCommons.dll](https://i.3v.fi/TwitchbotCommons.dll) from ohbot at the moment.
+Check [releases](https://github.com/3ventic/BotVentic/releases) or build the program yourself. Make sure to edit the config.sample.json and rename it to config.json.
