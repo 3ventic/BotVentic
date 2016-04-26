@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BotVentic
@@ -30,7 +31,7 @@ namespace BotVentic
                     return;
                 }
 
-                reply = await HandleCommands(reply, words);
+                reply = await HandleCommands((DiscordClient) client, reply, words);
 
                 if (reply == null)
                     reply = HandleEmotesAndConversions(reply, words);
@@ -58,7 +59,7 @@ namespace BotVentic
                 string reply = null;
                 string[] words = rawtext.Split(' ');
 
-                reply = await HandleCommands(reply, words);
+                reply = await HandleCommands((DiscordClient) client, reply, words);
 
                 if (reply == null)
                 {
@@ -221,7 +222,7 @@ namespace BotVentic
             return reply;
         }
 
-        private static async Task<string> HandleCommands(string reply, string[] words)
+        private static async Task<string> HandleCommands(DiscordClient client, string reply, string[] words)
         {
             if (words == null || words.Length < 0)
                 return "An error occurred.";
@@ -302,6 +303,17 @@ namespace BotVentic
                                 reply = "*updated list of known emotes*";
                                 break;
                         }
+                    }
+                    break;
+                case "!bot":
+                    try
+                    {
+                        reply = $"Connected via `{client.GatewaySocket.Host}`\nConnected to {client.Servers.Count()} servers.\nMemory Usage is {Math.Ceiling(System.Diagnostics.Process.GetCurrentProcess().WorkingSet64 / 1024.0)} KB";
+                    }
+                    catch (Exception ex) when (ex is ArgumentNullException || ex is OverflowException)
+                    {
+                        reply = $"Error: {ex.Message}";
+                        Console.WriteLine(ex.ToString());
                     }
                     break;
             }
