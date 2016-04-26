@@ -310,7 +310,7 @@ namespace BotVentic
                     {
                         reply = $"Connected via `{client.GatewaySocket.Host}`\nConnected to {client.Servers.Count()} servers.\nMemory Usage is {Math.Ceiling(System.Diagnostics.Process.GetCurrentProcess().WorkingSet64 / 1024.0)} KB";
                     }
-                    catch (Exception ex) when (ex is ArgumentNullException || ex is OverflowException)
+                    catch (Exception ex) when (ex is ArgumentNullException || ex is OverflowException || ex is PlatformNotSupportedException)
                     {
                         reply = $"Error: {ex.Message}";
                         Console.WriteLine(ex.ToString());
