@@ -90,10 +90,16 @@ namespace BotVentic
 
         private static async Task SendReply(object client, Message message, ulong channelId, ulong messageId, string reply)
         {
+            DiscordClient cl = (DiscordClient) client;
+            if (cl.MessageQueue.Count > 20)
+            {
+                Console.WriteLine("Too many messages queued at once.");
+                return;
+            }
             try
             {
                 LastHandledMessageOnChannel[channelId] = messageId;
-                Message x = await ((DiscordClient) client).GetChannel(channelId).SendMessage(reply);
+                Message x = await cl.GetChannel(channelId).SendMessage(reply);
                 AddBotReply(x, message);
             }
             catch (Exception ex)
