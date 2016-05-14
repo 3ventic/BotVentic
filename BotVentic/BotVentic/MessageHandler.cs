@@ -327,8 +327,8 @@ namespace BotVentic
                 case "!foodporn":
                     try
                     {
-                        WebClient webClient = new WebClient();
-                        string downloadString = webClient.DownloadString("http://foodporndaily.com");
+                  
+                        string downloadString = await Program.RequestAsync("http://foodporndaily.com");
                         string regexImgSrc = @"<img[^>]*?src\s*=\s*[""']?([^'"" >]+?)[ '""][^>]*?>";
                         MatchCollection matchesImgSrc = Regex.Matches(downloadString, regexImgSrc, RegexOptions.IgnoreCase | RegexOptions.Singleline);
                         reply = matchesImgSrc[1].Groups[1].Value;
