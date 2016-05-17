@@ -333,9 +333,10 @@ namespace BotVentic
                         MatchCollection matchesImgSrc = Regex.Matches(downloadString, regexImgSrc, RegexOptions.IgnoreCase | RegexOptions.Singleline);
                         reply = matchesImgSrc[1].Groups[1].Value;
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        Console.WriteLine("Failed to get daily foodporn image");
+                        reply = $"Could not get the daily foodporn image. Error: {ex.Message }";
+                        Console.WriteLine(ex.ToString());
                     }
                     break;
             }
