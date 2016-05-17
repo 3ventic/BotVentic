@@ -4,6 +4,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace BotVentic
@@ -319,6 +321,21 @@ namespace BotVentic
                     catch (Exception ex) when (ex is ArgumentNullException || ex is OverflowException || ex is PlatformNotSupportedException)
                     {
                         reply = $"Error: {ex.Message}";
+                        Console.WriteLine(ex.ToString());
+                    }
+                    break;
+                case "!foodporn":
+                    try
+                    {
+                  
+                        string downloadString = await Program.RequestAsync("http://foodporndaily.com");
+                        string regexImgSrc = @"<img[^>]*?src\s*=\s*[""']?([^'"" >]+?)[ '""][^>]*?>";
+                        MatchCollection matchesImgSrc = Regex.Matches(downloadString, regexImgSrc, RegexOptions.IgnoreCase | RegexOptions.Singleline);
+                        reply = matchesImgSrc[1].Groups[1].Value;
+                    }
+                    catch (Exception ex)
+                    {
+                        reply = $"Could not get the daily foodporn image. Error: {ex.Message }";
                         Console.WriteLine(ex.ToString());
                     }
                     break;
