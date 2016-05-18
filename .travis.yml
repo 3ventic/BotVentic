@@ -1,6 +1,7 @@
 ﻿language: csharp
-solution: BotVentic/BotVentic.sln
 mono:
     - latest
-install:
+script:
+    - cd BotVentic
     - nuget restore BotVentic.sln
+    - xbuild /p:TargetFrameworkVersion="v4.5" /p:Configuration=Release BotVentic.sln
