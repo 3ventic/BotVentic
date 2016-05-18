@@ -165,10 +165,10 @@ namespace BotVentic
                 if (aSet == bSet)
                     return 0;
 
-                if (aSet == 0 || aSet == 457)
+                if (aSet == 0 || bSet == 457)
                     return 1;
 
-                if (bSet == 0 || bSet == 457)
+                if (bSet == 0 || aSet == 457)
                     return -1;
 
                 return aSet - bSet;

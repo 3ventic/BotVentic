@@ -173,7 +173,7 @@ namespace BotVentic
             {
                 if (emote.Code == code)
                 {
-                    if (emote.EmoteSet == 0)
+                    if (emote.EmoteSet == 0 || emote.EmoteSet == 457)
                     {
                         reply = GetEmoteUrl(emote);
                         found = true;
@@ -193,7 +193,7 @@ namespace BotVentic
                 {
                     if (emoteComparer(code, emote.Code))
                     {
-                        if (emote.EmoteSet == 0)
+                        if (emote.EmoteSet == 0 || emote.EmoteSet == 457)
                         {
                             reply = GetEmoteUrl(emote);
                             found = true;
