@@ -327,15 +327,17 @@ namespace BotVentic
                 case "!foodporn":
                     try
                     {
-                  
-                        string downloadString = await Program.RequestAsync("http://foodporndaily.com");
+                        var rnd = new Random();
+                        var page = rnd.Next(1, 10);
+                        string downloadString = await Program.RequestAsync($"http://foodporndaily.com/explore/food/page/{page}/");
                         string regexImgSrc = @"<img[^>]*?src\s*=\s*[""']?([^'"" >]+?)[ '""][^>]*?>";
-                        MatchCollection matchesImgSrc = Regex.Matches(downloadString, regexImgSrc, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-                        reply = matchesImgSrc[1].Groups[1].Value;
+                        var matchesImgSrc = Regex.Matches(downloadString, regexImgSrc, RegexOptions.IgnoreCase | RegexOptions.Singleline);
+                        int image = rnd.Next(1, matchesImgSrc.Count);
+                        reply = matchesImgSrc[image].Groups[1].Value;
                     }
                     catch (Exception ex)
                     {
-                        reply = $"Could not get the daily foodporn image. Error: {ex.Message }";
+                        reply = $"Could not get the foodporn image. Error: {ex.Message }";
                         Console.WriteLine(ex.ToString());
                     }
                     break;
