@@ -1,4 +1,4 @@
-# BotVentic
+# BotVentic ![](https://travis-ci.org/3ventic/BotVentic.svg?branch=master)
 
 Twitch-focused Discord bot
 
