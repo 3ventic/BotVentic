@@ -240,7 +240,7 @@ namespace BotVentic
                 case "!stream":
                     if (words.Length > 1)
                     {
-                        string json = await Program.RequestAsync("https://api.twitch.tv/kraken/streams/" + words[1].ToLower() + "?stream_type=all");
+                        string json = await Program.RequestAsync("https://api.twitch.tv/kraken/streams/" + words[1].ToLower() + "?stream_type=all", true);
                         if (json != null)
                         {
                             var streams = JsonConvert.DeserializeObject<Json.Streams>(json);
@@ -271,7 +271,7 @@ namespace BotVentic
                 case "!channel":
                     if (words.Length > 1)
                     {
-                        string json = await Program.RequestAsync("https://api.twitch.tv/kraken/channels/" + words[1].ToLower());
+                        string json = await Program.RequestAsync("https://api.twitch.tv/kraken/channels/" + words[1].ToLower(), true);
                         if (json != null)
                         {
                             var channel = JsonConvert.DeserializeObject<Json.Channel>(json);

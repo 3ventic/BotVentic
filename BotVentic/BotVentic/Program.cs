@@ -144,7 +144,7 @@ namespace BotVentic
         /// </summary>
         private static async Task UpdateTwitchEmotes(List<EmoteInfo> e)
         {
-            var emotes = JsonConvert.DeserializeObject<EmoticonImages>(await RequestAsync("https://api.twitch.tv/kraken/chat/emoticon_images"));
+            var emotes = JsonConvert.DeserializeObject<EmoticonImages>(await RequestAsync("https://api.twitch.tv/kraken/chat/emoticon_images", true));
 
             if (emotes == null || emotes.Emotes == null)
             {
@@ -233,7 +233,7 @@ namespace BotVentic
         /// </summary>
         /// <param name="uri">URL to request</param>
         /// <returns>Response body</returns>
-        public static async Task<string> RequestAsync(string uri)
+        public static async Task<string> RequestAsync(string uri, bool includeClientId = false)
         {
             WebRequest request = WebRequest.Create(uri);
             // 30 seconds max, mainly because of emotes
@@ -241,6 +241,12 @@ namespace BotVentic
 
             // Change our user agent string to something more informative
             ((HttpWebRequest) request).UserAgent = "BotVentic/1.0";
+
+            if (includeClientId)
+            {
+                request.Headers.Add("Client-ID", "4wck2d3bifbikv779pnez14jujeyash");
+            }
+
             try
             {
                 string data;
@@ -248,7 +254,7 @@ namespace BotVentic
                 {
                     using (System.IO.Stream stream = response.GetResponseStream())
                     {
-                        System.IO.StreamReader reader = new System.IO.StreamReader(stream);
+                        StreamReader reader = new StreamReader(stream);
                         data = reader.ReadToEnd();
                     }
                 }
