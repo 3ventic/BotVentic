@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,18 +52,27 @@ namespace BotVentic
         {
             Console.WriteLine("Version " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
-            if (File.Exists("config.json"))
+            string configPath = "config.json";
+            if (File.Exists(args.LastOrDefault()))
             {
-                using (StreamReader sr = new StreamReader("config.json"))
+                configPath = args.Last();
+            }
+            else if (!File.Exists(configPath))
+            {
+                Console.Write("Missing config.json! Please enter the path to config.json: ");
+                configPath = Console.ReadLine();
+                if (!File.Exists(configPath))
                 {
-                    Config = JsonConvert.DeserializeObject<Config>(sr.ReadToEnd());
+                    Console.WriteLine("No config file present! Please create a file called config.json in the program's working directory. See config.sample.json for a base.");
+                    Thread.Sleep(4000);
+                    return;
                 }
             }
-            else
+
+            Console.WriteLine($"Using config at {configPath}");
+            using (StreamReader sr = new StreamReader(configPath))
             {
-                Console.WriteLine("No config file present! Please create a file called config.json in the program's working directory. See config.sample.json for a base.");
-                Thread.Sleep(4000);
-                return;
+                Config = JsonConvert.DeserializeObject<Config>(sr.ReadToEnd());
             }
 
             AuthUrl = Config.AuthUrl;
