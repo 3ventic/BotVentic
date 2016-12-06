@@ -314,9 +314,18 @@ namespace BotVentic
                     }
                     break;
                 case "!bot":
+                    int users = 0;
+                    foreach (var server in client.Servers)
+                    {
+                        users += server.UserCount;
+                    }
                     try
                     {
-                        reply = $"Connected via `{client.GatewaySocket.Host}`\nConnected to {client.Servers.Count()} servers.\nMemory Usage is {Math.Ceiling(System.Diagnostics.Process.GetCurrentProcess().WorkingSet64 / 1024.0)} KB";
+                        reply = $"Connected via `{client.GatewaySocket.Host}`\n";
+                        reply += $"Memory Usage is {Math.Ceiling(System.Diagnostics.Process.GetCurrentProcess().WorkingSet64 / 1024.0)} KB\n";
+                        reply += $"Serving {users} users on {client.Servers.Count()} servers.\n";
+                        reply += $"Uptime {(DateTime.UtcNow - Program.StartedAt).ToString(@"d\ \d\a\y\s\,\ h\ \h\o\u\r\s")}\n";
+                        reply += "Available commands: `!bot` `!update emotes` `!frozen pizza` `!foodporn` `!source` `!stream <Twitch channel name>` `!channel <Twitch channel name>`";
                     }
                     catch (Exception ex) when (ex is ArgumentNullException || ex is OverflowException || ex is PlatformNotSupportedException)
                     {

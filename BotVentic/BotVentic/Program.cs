@@ -22,6 +22,8 @@ namespace BotVentic
 
         private static ConnectionState State = ConnectionState.Disconnected;
 
+        public static readonly DateTime StartedAt = DateTime.UtcNow;
+
         // DictEmotes <EmoteCode, { emote_id, emote_type }>
         public static List<EmoteInfo> Emotes { get; private set; } = new List<EmoteInfo>();
         public static string BttvTemplate { get; private set; }
