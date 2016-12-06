@@ -18,4 +18,4 @@ Either [click here to invite the bot](https://3v.fi/l/botventic) or send the bot
 
 ## Running your own copy
 
-Check [releases](https://github.com/3ventic/BotVentic/releases) or build the program yourself. Make sure to edit the config.sample.json and rename it to config.json.
+Check [the installer](https://twitchstuff.3v.fi/botventic/installer/publish.htm) or build the program yourself. Make sure to edit the config.sample.json and rename it to config.json.
