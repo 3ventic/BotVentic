@@ -1,3 +1,5 @@
+# Development of this repository has ceased. See https://github.com/3ventic/BotVenticCore
+
 # BotVentic ![](https://travis-ci.org/3ventic/BotVentic.svg?branch=master)
 
 Twitch-focused Discord bot
